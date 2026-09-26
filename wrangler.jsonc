@@ -1,0 +1,21 @@
+{
+  // Cloudflare Worker configuration for crm-adscalezen-2
+  // This file controls how the Next.js app is deployed to Cloudflare Workers.
+  // DO NOT add a "services" binding for WORKER_SELF_REFERENCE — it is not needed.
+
+  "name": "crm-adscalezen-2",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+
+  // No service bindings needed — WORKER_SELF_REFERENCE has been intentionally
+  // removed. This Next.js app does not require self-referencing worker bindings.
+  "observability": {
+    "enabled": true
+  }
+}

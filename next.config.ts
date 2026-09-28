@@ -64,10 +64,7 @@ const SECURITY_HEADERS = [
 ] as const;
 
 const nextConfig: NextConfig = {
-  // NOTE: output:"standalone" is for Docker only.
-  // Cloudflare Pages/Workers deployment does NOT use standalone mode.
-  // Uncomment the line below only when building the Docker image.
-  // output: "standalone",
+  output: "standalone",
 
   /**
    * Cross-origin dev access (Next.js 16).

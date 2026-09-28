@@ -30,7 +30,8 @@
   "packageManager": "npm@10.9.9",
   "scripts": {
     "dev": "next dev",
-    "build": "opennextjs-cloudflare build",
+    "build": "next build && opennextjs-cloudflare build --skipNextBuild",
+    "build:worker": "opennextjs-cloudflare build",
     "build:next": "next build",
     "preview": "opennextjs-cloudflare build && wrangler dev",
     "deploy": "opennextjs-cloudflare build && wrangler deploy",

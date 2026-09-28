@@ -225,7 +225,7 @@ export default function LandingPage() {
                 <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
               </div>
               <div className="text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1 rounded border border-slate-800">
-                https://app.adscalezen.com/inbox
+                https://adscalezen.online/inbox
               </div>
               <div className="flex items-center gap-2 text-xs text-emerald-400">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />

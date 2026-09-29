@@ -1,135 +1,287 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import {
-  MessageSquare,
   Zap,
   ShieldCheck,
   Bot,
-  Users,
   Radio,
   ArrowRight,
   CheckCircle2,
   Sparkles,
   Workflow,
-  Check,
-  Lock,
   ChevronRight,
   Menu,
   X,
-  Smartphone,
-  BarChart3,
-  Flame,
+  Star,
+  TrendingUp,
+  MessageSquare,
+  Phone,
+  Mail,
+  Shield,
+  Award,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const testimonials = [
+  {
+    name: "Rani Sharma",
+    role: "Affiliate Marketing Professional",
+    rating: 5,
+    text: "मैंने Pankaj Sir से automation service ली थी। मेरी workflow setup में 10 दिनों के अंदर अच्छा improvement देखने को मिला। Thank you Pankaj Sir.",
+    tag: "Automation Workflow",
+  },
+  {
+    name: "Nisha Sharma",
+    role: "Digital Marketing Professional",
+    rating: 5,
+    text: "AdScale Zen की service से मुझे अपने digital work को व्यवस्थित करने में काफी मदद मिली। Support भी अच्छा मिला.",
+    tag: "Digital Solutions",
+  },
+  {
+    name: "Sapna Choudhary",
+    role: "Affiliate Marketing Professional",
+    rating: 5,
+    text: "मुझे automation और digital process समझने में अच्छी मदद मिली। Pankaj Sir और उनकी team का support अच्छा रहा.",
+    tag: "Process Optimization",
+  },
+  {
+    name: "Vijay Dubey",
+    role: "Business & Affiliate Marketing",
+    rating: 5,
+    text: "AdScale Zen की services ने मेरे काम के कई repetitive tasks को व्यवस्थित करने में मदद की।",
+    tag: "Task Automation",
+  },
+  {
+    name: "Anand Tiwari",
+    role: "Digital Business Professional",
+    rating: 5,
+    text: "Service और guidance दोनों practical रहे। मेरे business workflow को बेहतर तरीके से manage करने में मदद मिली.",
+    tag: "Workflow Management",
+  },
+  {
+    name: "Shilpa Gaur",
+    role: "Affiliate Marketing Professional",
+    rating: 5,
+    text: "Automation और digital tools को समझने में मुझे काफी सहायता मिली। Team का response अच्छा रहा.",
+    tag: "Tool Integration",
+  },
+];
+
+const servicesList = [
+  {
+    icon: MessageSquare,
+    title: "Official WhatsApp Cloud CRM",
+    desc: "Multi-agent shared team inboxes, automated customer replies, verified templates, and Meta Embedded onboarding.",
+    badge: "Meta Cloud API",
+  },
+  {
+    icon: Workflow,
+    title: "Marketing Automation",
+    desc: "Visual funnel builders, drip sequences, keyword trigger autoresponders, and webhook integrations.",
+    badge: "No-Code Builder",
+  },
+  {
+    icon: TrendingUp,
+    title: "Performance Digital Growth",
+    desc: "Data-backed campaign strategies, customer acquisition funnels, and transparent growth analytics.",
+    badge: "Scale Focus",
+  },
+  {
+    icon: Radio,
+    title: "Targeted Broadcast Campaigns",
+    desc: "Segmented messaging with high delivery rates, custom variable substitution, and real-time read analytics.",
+    badge: "High Throughput",
+  },
+  {
+    icon: Bot,
+    title: "AI Knowledge Base Copilot",
+    desc: "Integrate intelligent conversational agents that auto-draft accurate, human-like replies around the clock.",
+    badge: "AI Powered",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Enterprise Security & Infrastructure",
+    desc: "Row Level Security, HMAC-SHA256 signature verification, encrypted token storage, and granular access controls.",
+    badge: "Secure & Compliant",
+  },
+];
+
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+  const [founderImgError, setFounderImgError] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
-      {/* Glow Effects */}
+    <div className="min-h-screen bg-slate-50/60 text-slate-900 selection:bg-purple-500/20 selection:text-purple-900 font-sans">
+      {/* Background Gradient Mesh */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-emerald-600/20 via-teal-500/15 to-cyan-500/10 blur-[130px] rounded-full" />
-        <div className="absolute top-[600px] -left-40 w-[500px] h-[500px] bg-emerald-500/10 blur-[140px] rounded-full" />
-        <div className="absolute top-[1200px] -right-40 w-[600px] h-[600px] bg-cyan-500/10 blur-[150px] rounded-full" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[550px] bg-gradient-to-tr from-purple-200/40 via-indigo-100/50 to-blue-200/30 blur-[130px] rounded-full" />
+        <div className="absolute top-[650px] -left-36 w-[550px] h-[550px] bg-indigo-100/40 blur-[140px] rounded-full" />
+        <div className="absolute top-[1300px] -right-36 w-[650px] h-[650px] bg-purple-100/40 blur-[150px] rounded-full" />
       </div>
 
-      {/* Navigation Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-slate-950/70 border-b border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 font-black shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
-              <Zap className="h-5 w-5 fill-slate-950 text-slate-950" />
+      {/* Top Header Navigation */}
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          {/* Brand Logo & Name */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200 border border-slate-200/60">
+              {!logoError ? (
+                <Image
+                  src="/adscalezen-logo.jpg"
+                  alt="AdScale Zen Logo"
+                  fill
+                  className="object-cover"
+                  onError={() => setLogoError(true)}
+                  priority
+                />
+              ) : (
+                <Zap className="h-6 w-6 text-white" />
+              )}
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
-                Adscale Zen
+            <div className="flex flex-col">
+              <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-900 bg-clip-text text-transparent">
+                AdScale Zen
               </span>
-              <span className="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 uppercase tracking-wider">
-                SaaS
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest -mt-1">
+                Digital Growth Agency
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#features" className="hover:text-emerald-400 transition-colors">
-              Features
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600">
+            <Link href="/" className="hover:text-purple-600 transition-colors">
+              Home
+            </Link>
+            <a href="#services" className="hover:text-purple-600 transition-colors">
+              Services
             </a>
-            <a href="#inbox" className="hover:text-emerald-400 transition-colors">
-              Shared Inbox
+            <Link href="/about" className="hover:text-purple-600 transition-colors">
+              About Us
+            </Link>
+            <Link href="/subscription" className="hover:text-purple-600 transition-colors">
+              Pricing
+            </Link>
+            <a href="#testimonials" className="hover:text-purple-600 transition-colors">
+              Testimonials
             </a>
-            <a href="#automations" className="hover:text-emerald-400 transition-colors">
-              Automations
+            <a href="#contact" className="hover:text-purple-600 transition-colors">
+              Contact Us
             </a>
-            <a href="#embedded-signup" className="hover:text-emerald-400 transition-colors">
-              Embedded Connect
+            <a href="#policies" className="hover:text-purple-600 transition-colors text-xs text-slate-500">
+              Policies
             </a>
           </nav>
 
-          {/* Action CTAs */}
+          {/* Right Action CTAs */}
           <div className="hidden sm:flex items-center gap-3">
             <Link href="/login">
               <Button
                 variant="ghost"
-                className="text-slate-300 hover:text-white hover:bg-slate-800/80 font-medium"
+                className="text-slate-700 hover:text-purple-700 hover:bg-purple-50 font-medium text-sm"
               >
-                Sign In
+                Login
               </Button>
             </Link>
             <Link href="/signup">
-              <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-semibold shadow-lg shadow-emerald-500/25 px-5">
-                Get Started Free
+              <Button
+                variant="outline"
+                className="border-slate-300 hover:border-purple-400 text-slate-800 hover:bg-slate-50 font-medium text-sm shadow-xs"
+              >
+                Create Account
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-4">
+                Access Dashboard
               </Button>
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile Menu Button */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-slate-400 hover:text-white"
-            aria-label="Toggle menu"
+            className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+            aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-b border-slate-800 bg-slate-950/95 px-4 pt-3 pb-6 flex flex-col gap-3">
-            <a
-              href="#features"
+          <div className="lg:hidden border-b border-slate-200 bg-white/95 backdrop-blur-md px-6 pt-4 pb-6 flex flex-col gap-3 shadow-lg">
+            <Link
+              href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-slate-300 hover:text-emerald-400 py-1"
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
             >
-              Features
+              Home
+            </Link>
+            <a
+              href="#services"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
+            >
+              Services
+            </a>
+            <Link
+              href="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
+            >
+              About Us
+            </Link>
+            <Link
+              href="/subscription"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
+            >
+              Pricing
+            </Link>
+            <a
+              href="#testimonials"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
+            >
+              Testimonials
             </a>
             <a
-              href="#inbox"
+              href="#contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-slate-300 hover:text-emerald-400 py-1"
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
             >
-              Shared Inbox
+              Contact Us
             </a>
             <a
-              href="#automations"
+              href="#policies"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-slate-300 hover:text-emerald-400 py-1"
+              className="text-slate-600 font-medium py-1.5 hover:text-purple-600 text-xs"
             >
-              Automations
+              Terms, Privacy & Policies
             </a>
-            <div className="flex flex-col gap-2 pt-3 border-t border-slate-800">
-              <Link href="/login">
-                <Button variant="outline" className="w-full border-slate-700 text-slate-200">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button className="w-full bg-emerald-500 text-slate-950 font-semibold">
-                  Get Started Free
+            <div className="flex flex-col gap-2 pt-4 border-t border-slate-200">
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full text-sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full text-sm">
+                    Create Account
+                  </Button>
+                </Link>
+              </div>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold">
+                  Access Dashboard
                 </Button>
               </Link>
             </div>
@@ -137,357 +289,538 @@ export default function LandingPage() {
         )}
       </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-24 md:pt-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-medium mb-8 backdrop-blur-sm animate-pulse">
-          <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Next-Gen WhatsApp CRM & Marketing Automation API</span>
-          <ChevronRight className="h-3.5 w-3.5 text-emerald-400" />
-        </div>
+      {/* HERO SECTION */}
+      <section className="relative pt-12 pb-20 md:pt-20 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Column: Headline, Subheadline, CTAs & Direct Contact */}
+          <div className="lg:col-span-7 flex flex-col items-start text-left">
+            {/* Pill Tag */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-200 bg-purple-50/80 text-purple-700 text-xs font-semibold mb-6 shadow-xs">
+              <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+              <span>Performance Digital Agency & Automation</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-600" />
+              <span className="text-purple-900 font-bold">AdScale Zen</span>
+            </div>
 
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight max-w-5xl mx-auto leading-[1.12]">
-          Supercharge your WhatsApp Sales & Support with{" "}
-          <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-            Adscale Zen
-          </span>
-        </h1>
+            {/* Primary Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 leading-[1.12]">
+              Scale Your Business With{" "}
+              <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                Smarter Digital Growth
+              </span>
+            </h1>
 
-        <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto font-normal leading-relaxed">
-          The enterprise-ready WhatsApp CRM platform. Manage multi-agent shared inboxes,
-          automate replies with AI, execute high-converting broadcasts, and connect via
-          Meta Embedded Signup in 60 seconds.
-        </p>
+            {/* Subheadline */}
+            <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed font-normal max-w-2xl">
+              Performance-driven digital marketing, automation, WhatsApp solutions and growth services designed around your business goals and subscription plan.
+            </p>
 
-        {/* Hero CTA buttons */}
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/signup" className="w-full sm:w-auto">
-            <Button className="h-13 px-8 text-base bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-xl shadow-emerald-500/20 w-full sm:w-auto flex items-center justify-center gap-3">
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-              <span>Continue with Google</span>
-              <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </Link>
-          <Link href="/login" className="w-full sm:w-auto">
-            <Button
-              variant="outline"
-              className="h-13 px-8 text-base border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 w-full sm:w-auto font-medium"
-            >
-              Sign In to Dashboard
-            </Button>
-          </Link>
-        </div>
+            {/* CTAs */}
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
+              <Link href="/signup">
+                <Button className="h-13 px-8 text-base bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold shadow-lg shadow-indigo-500/25 rounded-xl flex items-center justify-center gap-2 transition-all">
+                  <span>Get Started</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <a href="#services">
+                <Button
+                  variant="outline"
+                  className="h-13 px-7 text-base border-slate-300 hover:border-purple-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-xl shadow-xs"
+                >
+                  Explore Services
+                </Button>
+              </a>
+            </div>
 
-        {/* Feature Badges */}
-        <div className="mt-12 pt-8 border-t border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left">
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-400 font-medium">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>98% Message Open Rates</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-400 font-medium">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>1-Click Facebook Connect</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-400 font-medium">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>Official Meta Cloud API</span>
-          </div>
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-400 font-medium">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>Zero Per-Seat Markup</span>
-          </div>
-        </div>
-
-        {/* Visual CRM App Preview (Mockup) */}
-        <div className="mt-14 relative rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900/90 to-slate-950 p-2 sm:p-4 shadow-2xl shadow-emerald-500/10">
-          <div className="rounded-xl border border-slate-800/80 bg-slate-950 overflow-hidden shadow-2xl">
-            {/* App Chrome Bar */}
-            <div className="h-10 bg-slate-900/90 border-b border-slate-800 px-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+            {/* Small Contact Area */}
+            <div className="mt-8 p-4 rounded-2xl bg-white/90 border border-slate-200/90 shadow-sm w-full max-w-lg">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Talk to our team
               </div>
-              <div className="text-xs font-mono text-slate-400 bg-slate-950 px-3 py-1 rounded border border-slate-800">
-                https://adscalezen.online/inbox
-              </div>
-              <div className="flex items-center gap-2 text-xs text-emerald-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>Live WhatsApp Sync</span>
+              <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-700">
+                <a
+                  href="tel:+919166763655"
+                  className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors py-1 px-2.5 rounded-lg hover:bg-purple-50"
+                >
+                  <Phone className="h-4 w-4 text-purple-600" />
+                  <span>+91 9166763655</span>
+                </a>
+                <a
+                  href="mailto:adscalezenonline@gmail.com"
+                  className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors py-1 px-2.5 rounded-lg hover:bg-purple-50"
+                >
+                  <Mail className="h-4 w-4 text-purple-600" />
+                  <span className="truncate">adscalezenonline@gmail.com</span>
+                </a>
               </div>
             </div>
 
-            {/* Mock Dashboard Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-12 min-h-[460px] text-left">
-              {/* Left Contacts Strip */}
-              <div className="md:col-span-4 border-r border-slate-800 bg-slate-950/80 p-3 flex flex-col gap-2">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-2 py-1">
-                  Active Conversations
-                </div>
-                <div className="p-3 rounded-xl bg-slate-900/80 border border-emerald-500/30 flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-300 font-bold flex items-center justify-center shrink-0">
-                    JD
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm text-slate-100">John Doe</span>
-                      <span className="text-[11px] text-emerald-400">Just now</span>
-                    </div>
-                    <p className="text-xs text-slate-400 truncate mt-0.5">
-                      I want to activate the WhatsApp API for our store!
-                    </p>
-                    <div className="flex gap-1.5 mt-2">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Hot Lead
-                      </span>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                        Enterprise
-                      </span>
-                    </div>
-                  </div>
-                </div>
+            {/* Trust Line */}
+            <div className="mt-6 flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-500">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+              <span>Professional Digital Solutions • Transparent Plans • Dedicated Support</span>
+            </div>
+          </div>
 
-                <div className="p-3 rounded-xl bg-slate-950 hover:bg-slate-900/40 border border-slate-800/60 flex items-start gap-3 opacity-70">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-300 font-bold flex items-center justify-center shrink-0">
-                    SK
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-sm text-slate-200">Sarah Khan</span>
-                      <span className="text-[11px] text-slate-500">12m ago</span>
+          {/* Right Column: Founder & Visual Floating Brand Elements */}
+          <div className="lg:col-span-5 relative flex items-center justify-center">
+            {/* Visual Glassmorphic Card Container */}
+            <div className="relative w-full max-w-md bg-gradient-to-b from-white via-white/95 to-slate-50/80 rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xl shadow-indigo-500/10">
+              
+              {/* Founder Photo & Details */}
+              <div className="relative rounded-2xl overflow-hidden bg-gradient-to-tr from-purple-100 via-indigo-50 to-blue-100 border border-slate-200/80 p-2 shadow-inner">
+                <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-slate-100">
+                  {!founderImgError ? (
+                    <Image
+                      src="/pankaj-swami.jpg"
+                      alt="Pankaj Swami - Founder, AdScale Zen"
+                      fill
+                      className="object-cover object-top hover:scale-105 transition-transform duration-500"
+                      onError={() => setFounderImgError(true)}
+                      priority
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-purple-500 to-indigo-600 text-white p-6 text-center">
+                      <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-black mb-3">
+                        PS
+                      </div>
+                      <span className="text-xl font-bold">Pankaj Swami</span>
+                      <span className="text-xs text-purple-200 mt-1">Founder, AdScale Zen</span>
                     </div>
-                    <p className="text-xs text-slate-400 truncate mt-0.5">
-                      Order #4928 delivery status confirmed.
-                    </p>
+                  )}
+
+                  {/* Gradient bottom overlay on image */}
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/85 via-slate-950/40 to-transparent p-4 text-white text-left">
+                    <div className="text-lg font-bold">Pankaj Swami</div>
+                    <div className="text-xs text-purple-200 font-medium">Founder, AdScale Zen</div>
                   </div>
                 </div>
               </div>
 
-              {/* Chat Thread Center */}
-              <div className="md:col-span-8 bg-slate-950 flex flex-col justify-between p-4 sm:p-6">
-                {/* Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center">
-                      JD
+              {/* Founder Mission Statement */}
+              <div className="mt-5 p-4 rounded-xl bg-purple-50/70 border border-purple-100/90 text-left">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Award className="h-4 w-4 text-purple-600" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-purple-900">
+                    Founder&apos;s Commitment
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
+                  &ldquo;Helping businesses simplify marketing, automation and digital growth with practical technology solutions.&rdquo;
+                </p>
+              </div>
+
+              {/* Floating Service Chips Grid */}
+              <div className="mt-5 grid grid-cols-2 gap-2 text-left">
+                <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-2 text-xs font-semibold text-slate-800 hover:border-purple-300 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-purple-500" />
+                  <span>Marketing</span>
+                </div>
+                <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-2 text-xs font-semibold text-slate-800 hover:border-purple-300 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                  <span>Automation</span>
+                </div>
+                <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-2 text-xs font-semibold text-slate-800 hover:border-purple-300 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span>WhatsApp Solutions</span>
+                </div>
+                <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-2 text-xs font-semibold text-slate-800 hover:border-purple-300 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-teal-500" />
+                  <span>Lead Generation</span>
+                </div>
+                <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-2 text-xs font-semibold text-slate-800 hover:border-purple-300 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-violet-500" />
+                  <span>CRM</span>
+                </div>
+                <div className="px-3 py-2 rounded-xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-2 text-xs font-semibold text-slate-800 hover:border-purple-300 transition-colors">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Digital Growth</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* POLICY & SERVICE TRANSPARENCY NOTICE (As Requested) */}
+      <section id="policies" className="py-8 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        <div className="rounded-2xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+              <Shield className="h-5 w-5" />
+            </div>
+            <div className="space-y-3 text-left">
+              <h3 className="text-base font-bold text-slate-900">
+                Transparent Service & Subscription Terms
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Services are provided according to the selected plan and subscription. We provide support relevant to the services included in your plan. Additional services are not included unless separately purchased or upgraded.
+              </p>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                All subscriptions and service purchases are subject to our Terms &amp; Conditions and Refund Policy.
+              </p>
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700">
+                <span className="font-bold text-slate-900">Non-Refundable Policy Notice: </span>
+                Due to the upfront infrastructure provisioning, specialized setup, and automated digital resource allocations, all subscriptions and completed setup fees are non-refundable once activated or accessed, to the extent permitted under applicable law.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SERVICES SECTION */}
+      <section id="services" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-xs font-bold uppercase tracking-wider mb-3">
+            Our Core Expertise
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Integrated Solutions Built for Real Results
+          </h2>
+          <p className="mt-4 text-base text-slate-600">
+            From smart messaging infrastructure to business workflow automation, we engineer digital tools that eliminate friction.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {servicesList.map((service, index) => {
+            const Icon = service.icon;
+            return (
+              <div
+                key={index}
+                className="group rounded-2xl bg-white border border-slate-200/90 p-7 shadow-xs hover:shadow-xl hover:border-purple-300 transition-all duration-300 flex flex-col justify-between text-left"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors duration-200">
+                      <Icon className="h-6 w-6" />
                     </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-slate-100">John Doe</h4>
-                      <p className="text-xs text-slate-400">+1 (555) 349-2041 · WhatsApp Verified</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
-                      Assigned: Sarah (Agent)
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                      {service.badge}
                     </span>
                   </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-700 transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {service.desc}
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center text-xs font-semibold text-purple-600 group-hover:translate-x-1 transition-transform">
+                  <span>Learn more</span>
+                  <ChevronRight className="h-4 w-4 ml-0.5" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ABOUT AGENCY SECTION */}
+      <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/80">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider mb-3">
+              About AdScale Zen
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              A Dedicated Partner in Practical Digital Transformation
+            </h2>
+            <p className="mt-5 text-base text-slate-600 leading-relaxed">
+              At AdScale Zen, we focus on genuine business utility. Led by founder Pankaj Swami, our agency bridges modern communication tools, Meta Cloud APIs, and targeted automation to help businesses manage customer touchpoints seamlessly.
+            </p>
+            <p className="mt-4 text-base text-slate-600 leading-relaxed">
+              We do not believe in unrealistic overnight miracles or exaggerated income guarantees. We believe in well-engineered workflows, transparent plans, reliable support, and steady compounding growth.
+            </p>
+
+            <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <div className="text-2xl font-black text-purple-600">100%</div>
+                <div className="text-xs font-semibold text-slate-700 mt-1">Official Cloud APIs</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">Compliant with Meta standards</div>
+              </div>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs">
+                <div className="text-2xl font-black text-indigo-600">Direct</div>
+                <div className="text-xs font-semibold text-slate-700 mt-1">Dedicated Support</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">Assistance matching your plan</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-6 bg-gradient-to-tr from-purple-100 via-indigo-50 to-blue-50 rounded-3xl p-8 border border-slate-200 shadow-sm text-left">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">
+              Why Businesses Choose AdScale Zen
+            </h3>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <div className="h-6 w-6 rounded-full bg-purple-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800">Clear &amp; Predictable Subscriptions</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">No hidden charges or surprise surcharges. Everything clearly stated in your plan.</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800">Complete CRM &amp; Workflow Integration</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">Organize customer conversations, multi-agent assignments, and automated reminders in one system.</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="h-6 w-6 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+                  <Check className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800">Founder-Led Accountability</h4>
+                  <p className="text-xs text-slate-600 mt-0.5">Direct guidance and practical execution from experienced digital marketing technologists.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS SECTION */}
+      <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/80">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider mb-3">
+            <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+            <span>Client Feedback &amp; Experiences</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Trusted by Digital &amp; Affiliate Professionals
+          </h2>
+          <p className="mt-3 text-sm text-slate-500">
+            Real feedback from professionals who have utilized our services and automation workflows.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {testimonials.map((t, idx) => (
+            <div
+              key={idx}
+              className="rounded-2xl bg-white border border-slate-200/90 p-6 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between text-left"
+            >
+              <div>
+                {/* Star Ratings */}
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(t.rating)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                  <span className="text-xs font-bold text-slate-500 ml-1.5">5.0</span>
                 </div>
 
-                {/* Messages Bubbles */}
-                <div className="space-y-4 my-6">
-                  {/* Incoming */}
-                  <div className="flex items-end gap-2">
-                    <div className="max-w-md rounded-2xl rounded-bl-sm bg-slate-900 border border-slate-800 px-4 py-3 text-sm text-slate-200 shadow-sm">
-                      Hi team, we are scaling to 50,000 monthly WhatsApp messages. Can Adscale Zen handle our campaign broadcasts?
-                      <div className="text-[10px] text-slate-500 text-right mt-1">10:42 AM</div>
-                    </div>
-                  </div>
+                {/* Testimonial Quote */}
+                <p className="text-sm text-slate-700 leading-relaxed mb-6 font-medium">
+                  &ldquo;{t.text}&rdquo;
+                </p>
+              </div>
 
-                  {/* AI Bot Auto-Response */}
-                  <div className="flex items-end justify-end gap-2">
-                    <div className="max-w-md rounded-2xl rounded-br-sm bg-emerald-600/20 border border-emerald-500/40 px-4 py-3 text-sm text-slate-100 shadow-sm">
-                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 mb-1">
-                        <Bot className="h-3.5 w-3.5" />
-                        <span>Adscale Zen AI Copilot</span>
-                      </div>
-                      Yes John! Adscale Zen supports unlimited broadcasts using official Meta Cloud API with high throughput, instant delivery status, and automatic opt-out tags.
-                      <div className="text-[10px] text-emerald-400/70 text-right mt-1">10:42 AM · Sent ✓✓</div>
-                    </div>
-                  </div>
+              {/* Author Info */}
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">{t.name}</h4>
+                  <p className="text-xs text-slate-500">{t.role}</p>
                 </div>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                  {t.tag}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-                {/* Input Bar */}
-                <div className="pt-3 border-t border-slate-800 flex items-center gap-3">
-                  <div className="flex-1 bg-slate-900/80 rounded-xl border border-slate-700/80 px-4 py-2.5 text-xs text-slate-400 flex items-center justify-between">
-                    <span>Type reply or use AI Smart Assist...</span>
-                    <Sparkles className="h-4 w-4 text-emerald-400" />
-                  </div>
-                  <Button className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2 text-xs">
-                    Send
-                  </Button>
-                </div>
+      {/* CONTACT SECTION */}
+      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/80">
+        <div className="max-w-4xl mx-auto rounded-3xl bg-gradient-to-tr from-purple-900 via-indigo-900 to-slate-900 text-white p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-72 h-72 bg-purple-500/20 blur-3xl rounded-full" />
+          
+          <div className="relative z-10 text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Ready to Upgrade Your Digital Operations?
+            </h2>
+            <p className="mt-4 text-purple-200 text-sm sm:text-base leading-relaxed">
+              Connect with Pankaj Swami and the AdScale Zen team to explore tailored automations, WhatsApp systems, and performance solutions.
+            </p>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="tel:+919166763655"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-slate-900 font-bold text-sm shadow-md hover:bg-slate-100 transition-colors"
+              >
+                <Phone className="h-4 w-4 text-purple-600" />
+                <span>Call +91 9166763655</span>
+              </a>
+              <a
+                href="mailto:adscalezenonline@gmail.com"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-purple-800/80 border border-purple-600/60 text-white font-semibold text-sm hover:bg-purple-800 transition-colors"
+              >
+                <Mail className="h-4 w-4 text-purple-300" />
+                <span>adscalezenonline@gmail.com</span>
+              </a>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-purple-800/60 flex items-center justify-center gap-6 text-xs text-purple-300">
+              <Link href="/subscription" className="hover:underline">
+                Explore Subscription Plans
+              </Link>
+              <span>•</span>
+              <Link href="/signup" className="hover:underline">
+                Instant Account Creation
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-slate-200 bg-white py-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 text-left">
+          
+          {/* Col 1: Brand & Description */}
+          <div className="md:col-span-4">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="relative h-8 w-8 rounded-lg overflow-hidden bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center">
+                {!logoError ? (
+                  <Image
+                    src="/adscalezen-logo.jpg"
+                    alt="AdScale Zen Logo"
+                    fill
+                    className="object-cover"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <Zap className="h-4 w-4 text-white" />
+                )}
+              </div>
+              <span className="text-lg font-bold text-slate-900">AdScale Zen</span>
+            </div>
+            <p className="text-xs font-semibold text-purple-600 mb-3">
+              Digital Growth • Automation • WhatsApp Solutions
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
+              Helping businesses simplify marketing, automation and digital growth with practical technology solutions.
+            </p>
+          </div>
+
+          {/* Col 2: Quick Links */}
+          <div className="md:col-span-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Quick Links
+            </div>
+            <ul className="space-y-2 text-xs text-slate-600">
+              <li>
+                <Link href="/" className="hover:text-purple-600 transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <a href="#services" className="hover:text-purple-600 transition-colors">
+                  Services
+                </a>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-purple-600 transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/subscription" className="hover:text-purple-600 transition-colors">
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <a href="#contact" className="hover:text-purple-600 transition-colors">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <Link href="/privacy-policy" className="hover:text-purple-600 transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" className="hover:text-purple-600 transition-colors">
+                  Refund Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-and-conditions" className="hover:text-purple-600 transition-colors">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Direct Contact */}
+          <div className="md:col-span-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Contact
+            </div>
+            <ul className="space-y-2.5 text-xs text-slate-600">
+              <li>
+                <a
+                  href="tel:+919166763655"
+                  className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors font-medium"
+                >
+                  <Phone className="h-3.5 w-3.5 text-purple-600" />
+                  <span>+91 9166763655</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:adscalezenonline@gmail.com"
+                  className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors font-medium"
+                >
+                  <Mail className="h-3.5 w-3.5 text-purple-600" />
+                  <span>adscalezenonline@gmail.com</span>
+                </a>
+              </li>
+              <li className="text-[11px] text-slate-500 pt-1">
+                Website: adscalezen.online
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: Founder */}
+          <div className="md:col-span-2">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Founder
+            </div>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="text-sm font-bold text-slate-900">Pankaj Swami</div>
+              <div className="text-[11px] text-purple-700 font-semibold mt-0.5">
+                Founder, AdScale Zen
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Bento Grid Features Section */}
-      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-3">
-            Enterprise Features
-          </h2>
-          <p className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-100">
-            Everything your team needs to sell and support on WhatsApp
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 hover:border-emerald-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-5">
-              <Users className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Multi-Agent Shared Inbox</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Enable your whole team to work seamlessly from a single official WhatsApp Business number. Assign chats, leave private internal notes, and track response speed.
-            </p>
+        {/* Bottom Bar */}
+        <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div>
+            &copy; {new Date().getFullYear()} AdScale Zen. All rights reserved.
           </div>
-
-          {/* Card 2 */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 hover:border-emerald-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center mb-5">
-              <Zap className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Meta Embedded Signup</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Connect with Facebook in one click. Clients onboard effortlessly without navigating complex developer dashboards or manual tokens.
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 hover:border-emerald-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-5">
-              <Radio className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Targeted Broadcasts</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Send personalized marketing campaigns and official Meta-approved templates to segmented tag lists with 98% delivery and read analytics.
-            </p>
-          </div>
-
-          {/* Card 4 */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 hover:border-emerald-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center mb-5">
-              <Workflow className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">No-Code Automations</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Build automated keyword bots, out-of-hours autoresponders, pipeline stage triggers, and customer qualification funnels visually.
-            </p>
-          </div>
-
-          {/* Card 5 */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 hover:border-emerald-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-5">
-              <Bot className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">AI Knowledge Base Copilot</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Bring your own OpenAI or Anthropic key. Connect your company documentation to auto-draft accurate, human-like answers in seconds.
-            </p>
-          </div>
-
-          {/* Card 6 */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 md:p-8 hover:border-emerald-500/40 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center mb-5">
-              <ShieldCheck className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Enterprise Security & API</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Row Level Security (RLS), HMAC-SHA256 webhook signatures, scoped REST API keys, and end-to-end token encryption (AES-256-GCM).
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works section */}
-      <section className="py-20 border-t border-slate-800/80 bg-slate-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-3">
-              Fast Onboarding
-            </h2>
-            <p className="text-3xl font-extrabold text-slate-100">
-              Live on WhatsApp in 3 Simple Steps
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
-            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800">
-              <div className="text-3xl font-black text-emerald-400 mb-4">01</div>
-              <h4 className="text-base font-bold text-slate-100 mb-2">Sign in with Google</h4>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Log in instantly using your Google account. Your dedicated Adscale Zen tenant and database profile are bootstrapped automatically.
-              </p>
-            </div>
-            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800">
-              <div className="text-3xl font-black text-teal-400 mb-4">02</div>
-              <h4 className="text-base font-bold text-slate-100 mb-2">Connect via Facebook</h4>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Click "Connect with Facebook" to link your official WhatsApp Business account and verify your phone number via Meta Embedded Signup.
-              </p>
-            </div>
-            <div className="p-6 rounded-2xl bg-slate-950 border border-slate-800">
-              <div className="text-3xl font-black text-cyan-400 mb-4">03</div>
-              <h4 className="text-base font-bold text-slate-100 mb-2">Engage & Automate</h4>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Receive inbound customer chats in your team inbox, configure AI automations, and launch revenue-driving broadcasts.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Footer Banner */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-        <div className="relative rounded-3xl p-8 sm:p-14 bg-gradient-to-tr from-emerald-950/70 via-slate-900 to-slate-950 border border-emerald-500/30 overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 -mt-10 -mr-10 w-60 h-60 bg-emerald-500/20 blur-3xl rounded-full" />
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-100 tracking-tight">
-            Ready to scale your WhatsApp marketing?
-          </h2>
-          <p className="mt-4 text-base text-slate-400 max-w-xl mx-auto">
-            Get started with Adscale Zen today. Connect your team and your customer conversations in one unified place.
-          </p>
-          <div className="mt-8 flex justify-center">
-            <Link href="/signup">
-              <Button className="h-12 px-8 text-base bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-lg shadow-emerald-500/25">
-                Start Free with Google
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
+          <div className="flex items-center gap-4">
+            <Link href="/refund-policy" className="hover:text-slate-600 transition-colors">
+              Refund Policy
+            </Link>
+            <span>•</span>
+            <Link href="/privacy-policy" className="hover:text-slate-600 transition-colors">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link href="/terms-and-conditions" className="hover:text-slate-600 transition-colors">
+              Terms &amp; Conditions
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
-            <Zap className="h-3.5 w-3.5" />
-          </div>
-          <span className="font-semibold text-slate-300">Adscale Zen</span>
-          <span>— WhatsApp CRM & Automation API</span>
-        </div>
-        <div>
-          © 2026 Adscale Zen. Built with official WhatsApp Business Cloud API.
         </div>
       </footer>
     </div>

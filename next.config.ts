@@ -1,5 +1,24 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import fs from "node:fs";
+import path from "node:path";
+
+// Ensure uploaded founder photo and logo are synced to public/
+try {
+  const sourceFounder = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded/media_1790662037029.jpg";
+  const sourceLogo = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded/media_1790662037621.jpg";
+  const targetFounder = path.join(process.cwd(), "public", "pankaj-swami.jpg");
+  const targetLogo = path.join(process.cwd(), "public", "adscalezen-logo.jpg");
+
+  if (fs.existsSync(sourceFounder) && !fs.existsSync(targetFounder)) {
+    fs.copyFileSync(sourceFounder, targetFounder);
+  }
+  if (fs.existsSync(sourceLogo) && !fs.existsSync(targetLogo)) {
+    fs.copyFileSync(sourceLogo, targetLogo);
+  }
+} catch {
+  // Ignore in environments where source path is absent
+}
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 

@@ -1,0 +1,362 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import {
+  Zap,
+  RotateCcw,
+  Menu,
+  X,
+  Phone,
+  Mail,
+  Shield,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export default function RefundPolicyPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-slate-50/60 text-slate-900 selection:bg-purple-500/20 selection:text-purple-900 font-sans">
+      {/* Background Mesh */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[850px] h-[500px] bg-gradient-to-tr from-purple-200/40 via-indigo-100/50 to-blue-200/30 blur-[130px] rounded-full" />
+      </div>
+
+      {/* Header Navigation */}
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-slate-200/80 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200 border border-slate-200/60">
+              {!logoError ? (
+                <Image
+                  src="/adscalezen-logo.jpg"
+                  alt="AdScale Zen Logo"
+                  fill
+                  className="object-cover"
+                  onError={() => setLogoError(true)}
+                  priority
+                />
+              ) : (
+                <Zap className="h-6 w-6 text-white" />
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-900 bg-clip-text text-transparent">
+                AdScale Zen
+              </span>
+              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest -mt-1">
+                Digital Growth Agency
+              </span>
+            </div>
+          </Link>
+
+          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600">
+            <Link href="/" className="hover:text-purple-600 transition-colors">
+              Home
+            </Link>
+            <Link href="/#services" className="hover:text-purple-600 transition-colors">
+              Services
+            </Link>
+            <Link href="/about" className="hover:text-purple-600 transition-colors">
+              About Us
+            </Link>
+            <Link href="/subscription" className="hover:text-purple-600 transition-colors">
+              Pricing
+            </Link>
+            <Link href="/#contact" className="hover:text-purple-600 transition-colors">
+              Contact Us
+            </Link>
+          </nav>
+
+          <div className="hidden sm:flex items-center gap-3">
+            <Link href="/login">
+              <Button variant="ghost" className="text-slate-700 hover:text-purple-700 hover:bg-purple-50 font-medium text-sm">
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button variant="outline" className="border-slate-300 hover:border-purple-400 text-slate-800 hover:bg-slate-50 font-medium text-sm shadow-xs">
+                Create Account
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-4">
+                Access Dashboard
+              </Button>
+            </Link>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-b border-slate-200 bg-white/95 backdrop-blur-md px-6 pt-4 pb-6 flex flex-col gap-3 shadow-lg">
+            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-slate-800 font-medium py-1.5 hover:text-purple-600">
+              Home
+            </Link>
+            <Link href="/#services" onClick={() => setMobileMenuOpen(false)} className="text-slate-800 font-medium py-1.5 hover:text-purple-600">
+              Services
+            </Link>
+            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-slate-800 font-medium py-1.5 hover:text-purple-600">
+              About Us
+            </Link>
+            <Link href="/subscription" onClick={() => setMobileMenuOpen(false)} className="text-slate-800 font-medium py-1.5 hover:text-purple-600">
+              Pricing
+            </Link>
+            <Link href="/#contact" onClick={() => setMobileMenuOpen(false)} className="text-slate-800 font-medium py-1.5 hover:text-purple-600">
+              Contact Us
+            </Link>
+            <div className="flex flex-col gap-2 pt-4 border-t border-slate-200">
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full text-sm">Login</Button>
+                </Link>
+                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full text-sm">Create Account</Button>
+                </Link>
+              </div>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold">
+                  Access Dashboard
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* Header Banner */}
+      <section className="pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-left">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-purple-200 bg-purple-50/80 text-purple-700 text-xs font-semibold mb-4 shadow-xs">
+          <RotateCcw className="h-3.5 w-3.5 text-purple-600" />
+          <span>Billing Transparency</span>
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
+          Refund &amp; Cancellation Policy
+        </h1>
+        <p className="mt-4 text-base text-slate-600 max-w-3xl">
+          Effective Date: Last updated October 2026. This policy outlines billing, subscription renewals, service activations, and cancellation terms for digital marketing, automation, CRM, and technology services offered by AdScale Zen.
+        </p>
+      </section>
+
+      {/* Core Policy Highlight Card */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-8">
+        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-900 to-indigo-950 text-white shadow-lg text-left">
+          <div className="flex items-center gap-2 text-purple-300 text-xs font-bold uppercase tracking-wider mb-2">
+            <Shield className="h-4 w-4" />
+            <span>Core Policy Statement</span>
+          </div>
+          <p className="text-base sm:text-lg font-medium leading-relaxed text-purple-50">
+            &ldquo;Unless otherwise required by applicable law or expressly agreed in writing, payments made for digital services, subscriptions, implementation, setup, consulting, advertising management, automation work or other services are non-refundable once the service has been activated, work has commenced, resources have been allocated or the service has been delivered.&rdquo;
+          </p>
+        </div>
+      </section>
+
+      {/* Main Detailed Content */}
+      <main className="pb-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-12 shadow-sm space-y-10 text-left text-slate-700 leading-relaxed text-sm sm:text-base">
+          
+          {/* 1. General Policy */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">1. General Policy</h2>
+            <p>
+              AdScale Zen provides intangible, performance-driven digital services, cloud automation, API connectivity, and software subscriptions. Due to the immediate deployment of computing infrastructure, specialized human labor, and third-party API configurations, all purchases are subject to this policy.
+            </p>
+            <p className="font-semibold text-slate-800">
+              Customers should review the selected plan, pricing, features, limitations and service scope before making payment.
+            </p>
+          </section>
+
+          {/* 2. Subscription Services */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">2. Subscription Services &amp; Renewals</h2>
+            <p>
+              Subscriptions to our SaaS CRM platform, automation limits, and hosting infrastructure operate on periodic billing cycles (monthly, quarterly, or annually).
+            </p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>
+                Subscriptions automatically renew at the end of each billing cycle unless cancelled prior to the renewal date via your account dashboard or by written request to our support team.
+              </li>
+              <li>
+                <strong>Cancellation of a subscription does not automatically create a right to a refund for the current billing period.</strong> Upon cancellation, your access remains operational until the conclusion of the active prepaid period.
+              </li>
+            </ul>
+          </section>
+
+          {/* 3. Digital Services & Custom Work */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">3. Digital Services &amp; Implementation</h2>
+            <p>
+              Custom work—including webhook setup, landing page development, funnel building, Meta Ads management, and WhatsApp Cloud integration—requires direct technical resource allocation. Once initial consultations occur, access is granted, or implementation tasks commence, payments made for setup and onboarding are non-refundable.
+            </p>
+          </section>
+
+          {/* 4. Service Activation */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">4. Service Activation</h2>
+            <p>
+              Service activation occurs upon the earliest of: (a) delivery of dashboard credentials or portal access, (b) initiation of API or database provisioning, (c) commencement of strategic or implementation work by our team, or (d) formal confirmation of plan activation.
+            </p>
+          </section>
+
+          {/* 5. Cancellation Procedure */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">5. Cancellation Procedure</h2>
+            <p>
+              Clients may request cancellation of their ongoing subscription at any time. To ensure timely processing before renewal:
+            </p>
+            <ul className="list-disc pl-6 space-y-1.5">
+              <li>Submit a cancellation request via email to <strong>adscalezenonline@gmail.com</strong> at least 48 hours before your next billing date.</li>
+              <li>Include your registered business email, organization name, and active plan details.</li>
+            </ul>
+          </section>
+
+          {/* 6. Non-Refundable Services */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">6. Non-Refundable Services</h2>
+            <p>The following categories are strictly non-refundable:</p>
+            <ul className="list-disc pl-6 space-y-1.5">
+              <li>Setup fees, initial onboarding charges, and custom developer hours.</li>
+              <li>Partially consumed subscription periods or unused monthly message credits.</li>
+              <li>Direct advertising spend disbursed to ad networks (Meta, Google).</li>
+              <li>Domain registrations, hosting fees, or customized third-party licenses.</li>
+            </ul>
+          </section>
+
+          {/* 7. Exceptional Cases & Statutory Rights */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">7. Exceptional Cases &amp; Applicable Law</h2>
+            <p>
+              We assess exceptional circumstances on a fair, case-by-case basis. Examples include verified duplicate billing resulting from technical gateway errors.
+            </p>
+            <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-sm">
+              <strong>Statutory Compliance:</strong> If a refund is required under applicable law, the applicable legal requirement will prevail over this policy.
+            </div>
+            <p className="text-xs text-slate-500">
+              Note: This policy does not claim that customers can never receive a refund under any circumstances; verified billing discrepancies or statutory consumer requirements are honored in compliance with relevant laws.
+            </p>
+          </section>
+
+          {/* 8. Third-Party Charges */}
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-slate-900">8. Third-Party Fees &amp; Charges</h2>
+            <p>
+              AdScale Zen integrates with external infrastructure providers including Meta (WhatsApp Business Cloud API), payment gateways (e.g. Razorpay), and cloud providers.
+            </p>
+            <p className="font-medium text-slate-800">
+              Third-party fees or charges may be non-refundable where the relevant third-party provider does not provide a refund. AdScale Zen cannot issue refunds for costs retained by external network platforms.
+            </p>
+          </section>
+
+          {/* 9. Contact Us */}
+          <section className="space-y-3 pt-4 border-t border-slate-200">
+            <h2 className="text-xl font-bold text-slate-900">9. Contact Us Regarding Billing</h2>
+            <p>If you have any questions or require clarification regarding your subscription plan, billing statements, or cancellation, please reach out to us:</p>
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-sm font-medium text-slate-800">
+              <div className="font-bold text-slate-900">AdScale Zen - Billing Support</div>
+              <div>Founder: Pankaj Swami</div>
+              <div>Email: <a href="mailto:adscalezenonline@gmail.com" className="text-purple-600 hover:underline">adscalezenonline@gmail.com</a></div>
+              <div>Phone: <a href="tel:+919166763655" className="text-purple-600 hover:underline">+91 9166763655</a></div>
+              <div>Website: <a href="https://adscalezen.online" target="_blank" rel="noreferrer" className="text-purple-600 hover:underline">adscalezen.online</a></div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white py-14 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 text-left">
+          <div className="md:col-span-4">
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="relative h-8 w-8 rounded-lg overflow-hidden bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center">
+                {!logoError ? (
+                  <Image src="/adscalezen-logo.jpg" alt="AdScale Zen Logo" fill className="object-cover" onError={() => setLogoError(true)} />
+                ) : (
+                  <Zap className="h-4 w-4 text-white" />
+                )}
+              </div>
+              <span className="text-lg font-bold text-slate-900">AdScale Zen</span>
+            </div>
+            <p className="text-xs font-semibold text-purple-600 mb-2">
+              Digital Growth • Automation • WhatsApp Solutions
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
+              Helping businesses simplify marketing, automation and digital growth with practical technology solutions.
+            </p>
+          </div>
+
+          <div className="md:col-span-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Quick Links
+            </div>
+            <ul className="space-y-2 text-xs text-slate-600">
+              <li><Link href="/" className="hover:text-purple-600 transition-colors">Home</Link></li>
+              <li><Link href="/#services" className="hover:text-purple-600 transition-colors">Services</Link></li>
+              <li><Link href="/about" className="hover:text-purple-600 transition-colors">About Us</Link></li>
+              <li><Link href="/subscription" className="hover:text-purple-600 transition-colors">Pricing</Link></li>
+              <li><Link href="/#contact" className="hover:text-purple-600 transition-colors">Contact Us</Link></li>
+              <li><Link href="/privacy-policy" className="hover:text-purple-600 transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-purple-600 transition-colors font-medium text-purple-600">Refund Policy</Link></li>
+              <li><Link href="/terms-and-conditions" className="hover:text-purple-600 transition-colors">Terms &amp; Conditions</Link></li>
+            </ul>
+          </div>
+
+          <div className="md:col-span-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Contact
+            </div>
+            <ul className="space-y-2.5 text-xs text-slate-600">
+              <li>
+                <a href="tel:+919166763655" className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors font-medium">
+                  <Phone className="h-3.5 w-3.5 text-purple-600" />
+                  <span>+91 9166763655</span>
+                </a>
+              </li>
+              <li>
+                <a href="mailto:adscalezenonline@gmail.com" className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors font-medium">
+                  <Mail className="h-3.5 w-3.5 text-purple-600" />
+                  <span>adscalezenonline@gmail.com</span>
+                </a>
+              </li>
+              <li className="text-[11px] text-slate-500 pt-1">Website: adscalezen.online</li>
+            </ul>
+          </div>
+
+          <div className="md:col-span-2">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
+              Founder
+            </div>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div className="text-sm font-bold text-slate-900">Pankaj Swami</div>
+              <div className="text-[11px] text-purple-700 font-semibold mt-0.5">
+                Founder, AdScale Zen
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div>&copy; {new Date().getFullYear()} AdScale Zen. All rights reserved.</div>
+          <div className="flex items-center gap-4">
+            <Link href="/refund-policy" className="hover:text-slate-600 transition-colors font-medium text-slate-600">Refund Policy</Link>
+            <span>•</span>
+            <Link href="/privacy-policy" className="hover:text-slate-600 transition-colors">Privacy</Link>
+            <span>•</span>
+            <Link href="/terms-and-conditions" className="hover:text-slate-600 transition-colors">Terms</Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

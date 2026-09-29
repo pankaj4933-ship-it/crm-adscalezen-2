@@ -72,22 +72,49 @@ function cleanEnvValue(val: string | undefined, prefix?: string): string {
 }
 
 /**
- * Exchange auth code with Meta Graph API for access token.
+ * The redirect_uri that the Facebook JS SDK (FB.login popup flow) uses internally.
+ * When exchanging a code obtained via FB.login(), this MUST be sent to Meta's
+ * token endpoint — it must exactly match what Meta used when issuing the code.
+ *
+ * For browser GET redirect flows (standard OAuth redirect), we use our own callback URL.
  */
-async function exchangeCodeForToken(code: string, origin: string): Promise<string> {
+const FB_SDK_REDIRECT_URI = 'https://www.facebook.com/connect/login_success.html'
+
+/**
+ * Exchange auth code with Meta Graph API for access token.
+ *
+ * @param code - The authorization code from Meta
+ * @param origin - The request origin (used for browser redirect URI)
+ * @param source - 'sdk' for FB.login() popup flow | 'redirect' for browser OAuth redirect
+ */
+async function exchangeCodeForToken(
+  code: string,
+  origin: string,
+  source: 'sdk' | 'redirect' = 'sdk'
+): Promise<string> {
   const appId =
     cleanEnvValue(process.env.META_APP_ID || process.env.NEXT_PUBLIC_META_APP_ID, 'META_APP_ID') ||
     DEFAULT_META_APP_ID
   const appSecret =
     cleanEnvValue(process.env.META_APP_SECRET, 'META_APP_SECRET') ||
     DEFAULT_META_APP_SECRET
-  const redirectUri =
-    cleanEnvValue(process.env.META_OAUTH_REDIRECT_URI, 'META_OAUTH_REDIRECT_URI') ||
-    (origin ? `${origin}/api/auth/meta/callback` : DEFAULT_META_OAUTH_REDIRECT_URI)
 
   if (!appId || !appSecret) {
     throw new Error('META_APP_ID or META_APP_SECRET is not configured on server.')
   }
+
+  /**
+   * CRITICAL: redirect_uri MUST match what Meta used when it issued the code.
+   * - FB.login() JS SDK popup → always uses Facebook's internal success URL
+   * - Browser OAuth redirect → uses our configured callback URL
+   */
+  const redirectUri =
+    source === 'sdk'
+      ? FB_SDK_REDIRECT_URI
+      : cleanEnvValue(process.env.META_OAUTH_REDIRECT_URI, 'META_OAUTH_REDIRECT_URI') ||
+        (origin ? `${origin}/api/auth/meta/callback` : DEFAULT_META_OAUTH_REDIRECT_URI)
+
+  console.log(`[Meta OAuth] Exchanging code via ${source} flow with redirect_uri: ${redirectUri}`)
 
   const params = new URLSearchParams({
     client_id: appId,
@@ -105,6 +132,8 @@ async function exchangeCodeForToken(code: string, origin: string): Promise<strin
 
   if (tokenData.error || !tokenData.access_token) {
     console.error('[Meta OAuth Error] Code exchange failed:', {
+      source,
+      redirectUri,
       errorType: tokenData.error?.type,
       errorCode: tokenData.error?.code,
       errorMessage: tokenData.error?.message,
@@ -364,8 +393,8 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${redirectTarget}&error=${encodeURIComponent('Profile not linked to workspace')}`)
     }
 
-    console.log('[Meta OAuth Callback] Exchanging code and retrieving WhatsApp Business information')
-    const accessToken = await exchangeCodeForToken(code, origin)
+    console.log('[Meta OAuth Callback] Exchanging code via browser redirect flow')
+    const accessToken = await exchangeCodeForToken(code, origin, 'redirect')
 
     await processAndSaveConnection({
       supabase,
@@ -419,8 +448,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    console.log('[Meta OAuth Callback] Exchanging code server-side for access token')
-    const accessToken = await exchangeCodeForToken(code, origin)
+    console.log('[Meta OAuth Callback] Exchanging code via FB.login() JS SDK popup flow')
+    const accessToken = await exchangeCodeForToken(code, origin, 'sdk')
 
     console.log('[Meta OAuth Callback] Processing WhatsApp connection & retrieving business details')
     const result = await processAndSaveConnection({

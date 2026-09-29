@@ -58,6 +58,10 @@ async function resolveAccountId(
   return data.account_id as string
 }
 
+const DEFAULT_META_APP_ID = '1591981308443623'
+const DEFAULT_META_APP_SECRET = '603ac6147c05e5d16f181b02d7785b4b'
+const DEFAULT_META_OAUTH_REDIRECT_URI = 'https://adscalezen.online/api/auth/meta/callback'
+
 function cleanEnvValue(val: string | undefined, prefix?: string): string {
   if (!val) return ''
   let cleaned = val.trim()
@@ -71,11 +75,15 @@ function cleanEnvValue(val: string | undefined, prefix?: string): string {
  * Exchange auth code with Meta Graph API for access token.
  */
 async function exchangeCodeForToken(code: string, origin: string): Promise<string> {
-  const appId = cleanEnvValue(process.env.META_APP_ID || process.env.NEXT_PUBLIC_META_APP_ID, 'META_APP_ID')
-  const appSecret = cleanEnvValue(process.env.META_APP_SECRET, 'META_APP_SECRET')
+  const appId =
+    cleanEnvValue(process.env.META_APP_ID || process.env.NEXT_PUBLIC_META_APP_ID, 'META_APP_ID') ||
+    DEFAULT_META_APP_ID
+  const appSecret =
+    cleanEnvValue(process.env.META_APP_SECRET, 'META_APP_SECRET') ||
+    DEFAULT_META_APP_SECRET
   const redirectUri =
     cleanEnvValue(process.env.META_OAUTH_REDIRECT_URI, 'META_OAUTH_REDIRECT_URI') ||
-    `${origin}/api/auth/meta/callback`
+    (origin ? `${origin}/api/auth/meta/callback` : DEFAULT_META_OAUTH_REDIRECT_URI)
 
   if (!appId || !appSecret) {
     throw new Error('META_APP_ID or META_APP_SECRET is not configured on server.')
@@ -111,8 +119,12 @@ async function exchangeCodeForToken(code: string, origin: string): Promise<strin
  * Inspect debug token to discover WABA ID if not passed from client.
  */
 async function inspectDebugToken(accessToken: string): Promise<{ wabaId?: string }> {
-  const appId = cleanEnvValue(process.env.META_APP_ID || process.env.NEXT_PUBLIC_META_APP_ID, 'META_APP_ID')
-  const appSecret = cleanEnvValue(process.env.META_APP_SECRET, 'META_APP_SECRET')
+  const appId =
+    cleanEnvValue(process.env.META_APP_ID || process.env.NEXT_PUBLIC_META_APP_ID, 'META_APP_ID') ||
+    DEFAULT_META_APP_ID
+  const appSecret =
+    cleanEnvValue(process.env.META_APP_SECRET, 'META_APP_SECRET') ||
+    DEFAULT_META_APP_SECRET
   if (!appId || !appSecret) return {}
 
   try {

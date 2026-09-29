@@ -291,15 +291,34 @@ export interface MessageReaction {
   created_at: string;
 }
 
+export interface WhatsAppPhoneNumber {
+  id?: string;
+  phone_number_id: string;
+  waba_id?: string;
+  display_phone_number: string;
+  verified_name?: string;
+  quality_rating?: string;
+  code_verification_status?: string;
+  name_status?: string;
+  is_default?: boolean;
+}
+
 export interface WhatsAppConfig {
   id: string;
   user_id: string;
+  account_id?: string;
   phone_number_id: string;
   waba_id?: string;
   access_token: string;
   verify_token?: string;
   status: 'connected' | 'disconnected';
   connected_at?: string;
+  display_phone_number?: string;
+  verified_name?: string;
+  quality_rating?: string;
+  code_verification_status?: string;
+  name_status?: string;
+  phone_numbers?: WhatsAppPhoneNumber[];
   /**
    * Set when POST /{phone_number_id}/register last succeeded. NULL
    * means the number was saved but never actually subscribed for

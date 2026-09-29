@@ -23,6 +23,8 @@ export interface MetaPhoneInfo {
   display_phone_number: string
   verified_name?: string
   quality_rating?: string
+  code_verification_status?: string
+  name_status?: string
 }
 
 interface MetaErrorResponse {
@@ -123,7 +125,7 @@ export async function verifyPhoneNumber(
   args: VerifyPhoneNumberArgs
 ): Promise<MetaPhoneInfo> {
   const { phoneNumberId, accessToken } = args
-  const url = `${META_API_BASE}/${phoneNumberId}?fields=id,display_phone_number,verified_name,quality_rating`
+  const url = `${META_API_BASE}/${phoneNumberId}?fields=id,display_phone_number,verified_name,quality_rating,code_verification_status,name_status`
   const response = await fetch(url, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
@@ -249,6 +251,9 @@ export interface WabaPhoneNumber {
   id: string
   display_phone_number?: string
   verified_name?: string
+  quality_rating?: string
+  code_verification_status?: string
+  name_status?: string
 }
 
 /**
@@ -267,7 +272,7 @@ export async function listWabaPhoneNumbers(
   const { wabaId, accessToken } = args
   const out: WabaPhoneNumber[] = []
   let url: string | undefined =
-    `${META_API_BASE}/${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name&limit=100`
+    `${META_API_BASE}/${wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,quality_rating,code_verification_status,name_status&limit=100`
   for (let page = 0; url && page < 5; page++) {
     const response = await fetch(url, {
       headers: { Authorization: `Bearer ${accessToken}` },

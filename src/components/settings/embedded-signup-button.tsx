@@ -62,6 +62,7 @@ export function EmbeddedSignupButton({
 }: Props) {
   const [sdkReady, setSdkReady] = useState(false);
   const [loading, setLoading] = useState(false);
+  const sessionDataRef = useRef<{ phone_number_id?: string; waba_id?: string } | null>(null);
 
   /*
    * ---------------------------------------------------------
@@ -165,46 +166,14 @@ export function EmbeddedSignupButton({
 
       console.log('WhatsApp Embedded Signup event:', data);
 
-      /*
-       * Normal Cloud API Embedded Signup
-       */
-      if (data.event === 'FINISH') {
-        const phone_number_id = data.data?.phone_number_id;
-        const waba_id = data.data?.waba_id;
-
-        setLoading(false);
-
-        /*
-         * IMPORTANT:
-         *
-         * The authorization CODE comes from FB.login callback.
-         * We don't try to get it from FB.getLoginStatus().
-         *
-         * phone_number_id + waba_id are session information.
-         */
-        window.dispatchEvent(
-          new CustomEvent('WA_EMBEDDED_SIGNUP_FINISH', {
-            detail: {
-              phone_number_id,
-              waba_id,
-            },
-          }),
-        );
-
-        return;
-      }
-
-      /*
-       * WhatsApp Business App / Coexistence flow
-       */
       if (
-        data.event ===
-        'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'
+        data.event === 'FINISH' ||
+        data.event === 'FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING'
       ) {
         const phone_number_id = data.data?.phone_number_id;
         const waba_id = data.data?.waba_id;
 
-        setLoading(false);
+        sessionDataRef.current = { phone_number_id, waba_id };
 
         window.dispatchEvent(
           new CustomEvent('WA_EMBEDDED_SIGNUP_FINISH', {
@@ -274,6 +243,7 @@ export function EmbeddedSignupButton({
     }
 
     setLoading(true);
+    sessionDataRef.current = null;
 
     /*
      * IMPORTANT:
@@ -283,25 +253,32 @@ export function EmbeddedSignupButton({
       (response) => {
         console.log('Facebook login response:', response);
 
-        if (response?.authResponse?.code) {
-          /*
-           * This CODE must be sent to your backend.
-           *
-           * DO NOT exchange it in the browser because
-           * App Secret must remain server-side.
-           */
-          const code = response.authResponse.code;
+        const code = response?.authResponse?.code;
+        const directToken = (response?.authResponse as any)?.accessToken;
 
-          /*
-           * Wait for WA_EMBEDDED_SIGNUP event to get
-           * phone_number_id / waba_id.
-           */
+        if (code || directToken) {
+          // Check if session data was already received
+          const cachedSession = sessionDataRef.current;
+          if (cachedSession && (cachedSession.phone_number_id || cachedSession.waba_id)) {
+            setLoading(false);
+            onSuccess({
+              code: code || '',
+              access_token: directToken,
+              phone_number_id: cachedSession.phone_number_id,
+              waba_id: cachedSession.waba_id,
+            });
+            return;
+          }
+
+          // Otherwise, wait up to 1200ms for the postMessage event or proceed with code
+          let completed = false;
           const finishHandler = (event: Event) => {
-            const customEvent =
-              event as CustomEvent<{
-                phone_number_id?: string;
-                waba_id?: string;
-              }>;
+            if (completed) return;
+            completed = true;
+            const customEvent = event as CustomEvent<{
+              phone_number_id?: string;
+              waba_id?: string;
+            }>;
 
             window.removeEventListener(
               'WA_EMBEDDED_SIGNUP_FINISH',
@@ -311,9 +288,9 @@ export function EmbeddedSignupButton({
             setLoading(false);
 
             onSuccess({
-              code,
-              phone_number_id:
-                customEvent.detail?.phone_number_id,
+              code: code || '',
+              access_token: directToken,
+              phone_number_id: customEvent.detail?.phone_number_id,
               waba_id: customEvent.detail?.waba_id,
             });
           };
@@ -322,6 +299,24 @@ export function EmbeddedSignupButton({
             'WA_EMBEDDED_SIGNUP_FINISH',
             finishHandler,
           );
+
+          // Fallback timeout in case postMessage already fired or was suppressed by browser
+          setTimeout(() => {
+            if (!completed) {
+              completed = true;
+              window.removeEventListener(
+                'WA_EMBEDDED_SIGNUP_FINISH',
+                finishHandler,
+              );
+              setLoading(false);
+              onSuccess({
+                code: code || '',
+                access_token: directToken,
+                phone_number_id: sessionDataRef.current?.phone_number_id,
+                waba_id: sessionDataRef.current?.waba_id,
+              });
+            }
+          }, 1000);
 
           return;
         }
@@ -343,24 +338,11 @@ export function EmbeddedSignupButton({
       },
       {
         config_id: CONFIG_ID,
-
-        /*
-         * Embedded Signup should return an authorization code.
-         */
         response_type: 'code',
-
         override_default_response_type: true,
-
         extras: {
           setup: {},
-
-          /*
-           * Keep this ONLY if you want users to connect
-           * an existing WhatsApp Business App number
-           * through the coexistence flow.
-           */
           featureType: 'whatsapp_business_app_onboarding',
-
           sessionInfoVersion: '3',
         },
       },

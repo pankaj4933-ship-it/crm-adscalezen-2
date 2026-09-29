@@ -162,9 +162,20 @@ export async function GET(request: Request) {
       )
     }
 
-    // Check if any config's verify_token matches. Also collect the
-    // matching row so we can opportunistically upgrade its token to
-    // GCM if it was still in the legacy CBC format.
+    // Check against global environment verify token
+    const globalVerifyToken =
+      process.env.WHATSAPP_VERIFY_TOKEN ||
+      process.env.META_VERIFY_TOKEN ||
+      'adscalezen_verify_token_2026'
+
+    if (verifyToken === globalVerifyToken) {
+      return new Response(challenge, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain' },
+      })
+    }
+
+    // Check if any config's verify_token matches in database.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let matchedConfig: any = null
     for (const config of configs) {
@@ -180,8 +191,7 @@ export async function GET(request: Request) {
     }
 
     if (matchedConfig) {
-      // Fire-and-forget GCM upgrade. Safe to run on every subscribe
-      // since it's a no-op once the column is already GCM.
+      // Fire-and-forget GCM upgrade if needed
       if (isLegacyFormat(matchedConfig.verify_token)) {
         void supabaseAdmin()
           .from('whatsapp_config')

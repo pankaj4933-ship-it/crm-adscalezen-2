@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MessageSquare, UsersRound, Zap } from "lucide-react";
+import { UsersRound } from "lucide-react";
 
 // `useSearchParams` opts the component out of static prerendering
 // unless it sits under a Suspense boundary. We split the form into
@@ -100,11 +101,17 @@ function LoginPageInner() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md border-border bg-card shadow-xl">
         <CardHeader className="items-center text-center">
-          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white shadow-lg shadow-emerald-500/20">
+          <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl overflow-hidden bg-white shadow-lg shadow-emerald-500/20">
             {inviteToken ? (
-              <UsersRound className="h-6 w-6 text-white" />
+              <UsersRound className="h-8 w-8 text-emerald-600" />
             ) : (
-              <Zap className="h-6 w-6 text-white fill-white/20" />
+              <Image
+                src="/adscalezen-logo.png"
+                alt="AdScale Zen Logo"
+                width={64}
+                height={64}
+                className="h-full w-full object-contain"
+              />
             )}
           </div>
           <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-emerald-500">

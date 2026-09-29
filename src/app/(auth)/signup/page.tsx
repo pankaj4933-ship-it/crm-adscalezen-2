@@ -15,7 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MessageSquare, CheckCircle, UsersRound, Zap } from "lucide-react";
+import { MessageSquare, CheckCircle, UsersRound } from "lucide-react";
+import Image from "next/image";
 
 // `useSearchParams` opts the component out of static prerendering
 // unless wrapped in Suspense — same pattern as /login.
@@ -158,11 +159,17 @@ function SignupPageInner() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md border-border bg-card shadow-xl">
         <CardHeader className="items-center text-center">
-          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white shadow-lg shadow-emerald-500/20">
+          <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl overflow-hidden bg-white shadow-lg shadow-emerald-500/20">
             {inviteToken ? (
-              <UsersRound className="h-6 w-6 text-white" />
+              <UsersRound className="h-8 w-8 text-emerald-600" />
             ) : (
-              <Zap className="h-6 w-6 text-white fill-white/20" />
+              <Image
+                src="/adscalezen-logo.png"
+                alt="AdScale Zen Logo"
+                width={64}
+                height={64}
+                className="h-full w-full object-contain"
+              />
             )}
           </div>
           <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-emerald-500">

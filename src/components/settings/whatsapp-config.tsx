@@ -27,7 +27,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -740,12 +740,12 @@ export function WhatsAppConfig() {
                           <option key={num.phone_number_id} value={num.phone_number_id}>
                             {num.display_phone_number || num.phone_number_id}
                             {num.verified_name ? ` (${num.verified_name})` : ''}
-                            {num.phone_number_id === config.phone_number_id ? ' — [Active]' : ''}
+                            {num.phone_number_id === (config?.phone_number_id || '') ? ' — [Active]' : ''}
                           </option>
                         ))
                       ) : (
-                        <option value={config.phone_number_id}>
-                          {phoneInfo?.display_phone_number || config.phone_number_id}
+                        <option value={config?.phone_number_id || ''}>
+                          {phoneInfo?.display_phone_number || config?.phone_number_id || ''}
                           {phoneInfo?.verified_name ? ` (${phoneInfo.verified_name})` : ''}
                         </option>
                       )}
@@ -767,24 +767,27 @@ export function WhatsAppConfig() {
               <Card className="border-border">
                 <CardContent className="pt-6">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <Button variant="outline" size="sm" asChild className="border-border text-foreground hover:bg-muted">
-                      <Link href="/broadcasts">
-                        <FileText className="size-4 mr-1.5 text-muted-foreground" />
-                        Manage Templates
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild className="border-border text-foreground hover:bg-muted">
-                      <Link href="/contacts">
-                        <Users className="size-4 mr-1.5 text-muted-foreground" />
-                        Manage Contacts
-                      </Link>
-                    </Button>
-                    <Button size="sm" asChild className="bg-[#1e293b] hover:bg-[#0f172a] text-white">
-                      <Link href="/broadcasts">
-                        <Send className="size-4 mr-1.5" />
-                        Create New Campaign
-                      </Link>
-                    </Button>
+                    <Link
+                      href="/broadcasts"
+                      className={buttonVariants({ variant: 'outline', size: 'sm', className: 'border-border text-foreground hover:bg-muted' })}
+                    >
+                      <FileText className="size-4 mr-1.5 text-muted-foreground" />
+                      Manage Templates
+                    </Link>
+                    <Link
+                      href="/contacts"
+                      className={buttonVariants({ variant: 'outline', size: 'sm', className: 'border-border text-foreground hover:bg-muted' })}
+                    >
+                      <Users className="size-4 mr-1.5 text-muted-foreground" />
+                      Manage Contacts
+                    </Link>
+                    <Link
+                      href="/broadcasts"
+                      className={buttonVariants({ size: 'sm', className: 'bg-[#1e293b] hover:bg-[#0f172a] text-white' })}
+                    >
+                      <Send className="size-4 mr-1.5" />
+                      Create New Campaign
+                    </Link>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -845,7 +848,7 @@ export function WhatsAppConfig() {
               </Card>
 
               {/* Advanced / Manual Fallback Accordion */}
-              <Accordion type="single" collapsible className="w-full">
+              <Accordion className="w-full">
                 <AccordionItem value="manual-creds" className="border-border">
                   <AccordionTrigger className="text-muted-foreground hover:text-foreground text-xs py-3">
                     Advanced Configuration &amp; Diagnostic Tools
@@ -1046,7 +1049,7 @@ export function WhatsAppConfig() {
                   <div>
                     <span className="text-xs text-muted-foreground block">Phone Number ID</span>
                     <span className="font-mono text-foreground font-semibold text-sm">
-                      {phoneInfo?.id || config.phone_number_id}
+                      {phoneInfo?.id || config?.phone_number_id || ''}
                     </span>
                   </div>
 
@@ -1067,7 +1070,7 @@ export function WhatsAppConfig() {
                   <div>
                     <span className="text-xs text-muted-foreground block">Display Phone Number</span>
                     <span className="font-semibold text-foreground text-base">
-                      {phoneInfo?.display_phone_number || config.phone_number_id}
+                      {phoneInfo?.display_phone_number || config?.phone_number_id || ''}
                     </span>
                   </div>
 
@@ -1112,7 +1115,7 @@ export function WhatsAppConfig() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Accordion type="single" collapsible defaultValue="step1">
+                <Accordion className="w-full">
                   <AccordionItem value="step1" className="border-border">
                     <AccordionTrigger className="text-muted-foreground hover:text-foreground text-xs">
                       1. Connect via Facebook

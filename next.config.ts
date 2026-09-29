@@ -3,18 +3,30 @@ import createNextIntlPlugin from "next-intl/plugin";
 import fs from "node:fs";
 import path from "node:path";
 
-// Ensure uploaded founder photo and logo are synced to public/
+// Ensure uploaded founder photo and logo are synced to public/ and available as base64
 try {
-  const sourceFounder = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded/media_1790662037029.jpg";
-  const sourceLogo = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded/media_1790662037621.jpg";
-  const targetFounder = path.join(process.cwd(), "public", "pankaj-swami.jpg");
-  const targetLogo = path.join(process.cwd(), "public", "adscalezen-logo.jpg");
+  const dir = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded";
+  const sourceFounder = path.join(dir, "media_1790666171980.jpg");
+  const sourceLogo = path.join(dir, "media_1790666156598.jpg");
+  const publicDir = path.join(process.cwd(), "public");
 
-  if (fs.existsSync(sourceFounder) && !fs.existsSync(targetFounder)) {
-    fs.copyFileSync(sourceFounder, targetFounder);
+  if (fs.existsSync(sourceLogo)) {
+    fs.copyFileSync(sourceLogo, path.join(publicDir, "adscalezen-logo.png"));
+    fs.copyFileSync(sourceLogo, path.join(publicDir, "adscalezen-logo.jpg"));
   }
-  if (fs.existsSync(sourceLogo) && !fs.existsSync(targetLogo)) {
-    fs.copyFileSync(sourceLogo, targetLogo);
+  if (fs.existsSync(sourceFounder)) {
+    fs.copyFileSync(sourceFounder, path.join(publicDir, "pankaj-swami.jpg"));
+  }
+
+  if (fs.existsSync(sourceLogo) && fs.existsSync(sourceFounder)) {
+    const logoB64 = fs.readFileSync(sourceLogo).toString("base64");
+    const founderB64 = fs.readFileSync(sourceFounder).toString("base64");
+    const libDir = path.join(process.cwd(), "src", "lib");
+    if (!fs.existsSync(libDir)) fs.mkdirSync(libDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(libDir, "brand-assets.ts"),
+      `export const ADSCALEZEN_LOGO_B64 = "data:image/png;base64,${logoB64}";\nexport const FOUNDER_PHOTO_B64 = "data:image/jpeg;base64,${founderB64}";\n`
+    );
   }
 } catch {
   // Ignore in environments where source path is absent

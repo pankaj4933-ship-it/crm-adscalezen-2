@@ -55,10 +55,10 @@ export default function AboutPage() {
             <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200 border border-slate-200/60">
               {!logoError ? (
                 <Image
-                  src="/adscalezen-logo.jpg"
+                  src="/adscalezen-logo.png"
                   alt="AdScale Zen Logo"
                   fill
-                  className="object-cover"
+                  className="object-contain p-0.5"
                   onError={() => setLogoError(true)}
                   priority
                 />

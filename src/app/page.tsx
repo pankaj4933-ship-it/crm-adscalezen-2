@@ -110,6 +110,14 @@ const servicesList = [
   },
 ];
 
+function WhatsAppIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" className={className}>
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.155.57 4.178 1.564 5.927l-1.564 5.707 5.841-1.533c1.706.93 3.655 1.469 5.729 1.469 6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z" />
+    </svg>
+  );
+}
+
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
@@ -129,18 +137,18 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           {/* Brand Logo & Name */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200 border border-slate-200/60">
+            <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform duration-200 border border-slate-800">
               {!logoError ? (
                 <Image
-                  src="/adscalezen-logo.jpg"
+                  src="/adscalezen-logo.png"
                   alt="AdScale Zen Logo"
                   fill
-                  className="object-cover"
+                  className="object-contain p-0.5"
                   onError={() => setLogoError(true)}
                   priority
                 />
               ) : (
-                <Zap className="h-6 w-6 text-white" />
+                <Zap className="h-6 w-6 text-purple-400" />
               )}
             </div>
             <div className="flex flex-col">
@@ -173,9 +181,9 @@ export default function LandingPage() {
             <a href="#contact" className="hover:text-purple-600 transition-colors">
               Contact Us
             </a>
-            <a href="#policies" className="hover:text-purple-600 transition-colors text-xs text-slate-500">
-              Policies
-            </a>
+            <Link href="/privacy-policy" className="hover:text-purple-600 transition-colors">
+              Privacy Policy
+            </Link>
           </nav>
 
           {/* Right Action CTAs */}
@@ -188,14 +196,18 @@ export default function LandingPage() {
                 Login
               </Button>
             </Link>
-            <Link href="/signup">
+            <a
+              href="https://chat.whatsapp.com/KabZOC7HKg02VWjPd4eav7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button
-                variant="outline"
-                className="border-slate-300 hover:border-purple-400 text-slate-800 hover:bg-slate-50 font-medium text-sm shadow-xs"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-md shadow-emerald-600/25 px-4 flex items-center gap-2 border border-emerald-500/40"
               >
-                Create Account
+                <WhatsAppIcon className="h-4 w-4 fill-white" />
+                <span>Join Official Community</span>
               </Button>
-            </Link>
+            </a>
             <Link href="/dashboard">
               <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-4">
                 Access Dashboard
@@ -259,23 +271,42 @@ export default function LandingPage() {
             >
               Contact Us
             </a>
-            <a
-              href="#policies"
+            <Link
+              href="/privacy-policy"
               onClick={() => setMobileMenuOpen(false)}
-              className="text-slate-600 font-medium py-1.5 hover:text-purple-600 text-xs"
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
             >
-              Terms, Privacy & Policies
-            </a>
+              Privacy Policy
+            </Link>
+            <Link
+              href="/terms-and-conditions"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-slate-800 font-medium py-1.5 hover:text-purple-600"
+            >
+              Terms &amp; Conditions
+            </Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-slate-200">
-              <div className="grid grid-cols-2 gap-2">
+              <a
+                href="https://chat.whatsapp.com/KabZOC7HKg02VWjPd4eav7"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full"
+              >
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center justify-center gap-2">
+                  <WhatsAppIcon className="h-4 w-4 fill-white" />
+                  <span>Join Official Community</span>
+                </Button>
+              </a>
+              <div className="grid grid-cols-2 gap-2 mt-1">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full text-sm">
                     Login
                   </Button>
                 </Link>
-                <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/subscription" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full text-sm">
-                    Create Account
+                    Pricing
                   </Button>
                 </Link>
               </div>
@@ -652,6 +683,15 @@ export default function LandingPage() {
 
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
+                href="https://wa.me/919166763655?text=Hello%20Pankaj%20Sir%2C%20I%20am%20interested%20in%20AdScale%20Zen%20services"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/25 transition-all"
+              >
+                <WhatsAppIcon className="h-5 w-5 fill-slate-950" />
+                <span>WhatsApp 24/7 Support (+91 9166763655)</span>
+              </a>
+              <a
                 href="tel:+919166763655"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-slate-900 font-bold text-sm shadow-md hover:bg-slate-100 transition-colors"
               >
@@ -672,9 +712,14 @@ export default function LandingPage() {
                 Explore Subscription Plans
               </Link>
               <span>•</span>
-              <Link href="/signup" className="hover:underline">
-                Instant Account Creation
-              </Link>
+              <a
+                href="https://chat.whatsapp.com/KabZOC7HKg02VWjPd4eav7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline text-emerald-300 font-medium"
+              >
+                Join Official WhatsApp Community
+              </a>
             </div>
           </div>
         </div>
@@ -687,17 +732,17 @@ export default function LandingPage() {
           {/* Col 1: Brand & Description */}
           <div className="md:col-span-4">
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="relative h-8 w-8 rounded-lg overflow-hidden bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center">
+              <div className="relative h-9 w-9 rounded-lg overflow-hidden bg-slate-950 flex items-center justify-center border border-slate-800">
                 {!logoError ? (
                   <Image
-                    src="/adscalezen-logo.jpg"
+                    src="/adscalezen-logo.png"
                     alt="AdScale Zen Logo"
                     fill
-                    className="object-cover"
+                    className="object-contain p-0.5"
                     onError={() => setLogoError(true)}
                   />
                 ) : (
-                  <Zap className="h-4 w-4 text-white" />
+                  <Zap className="h-4 w-4 text-purple-400" />
                 )}
               </div>
               <span className="text-lg font-bold text-slate-900">AdScale Zen</span>
@@ -762,16 +807,27 @@ export default function LandingPage() {
           {/* Col 3: Direct Contact */}
           <div className="md:col-span-3">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3">
-              Contact
+              Contact &amp; 24/7 Support
             </div>
             <ul className="space-y-2.5 text-xs text-slate-600">
+              <li>
+                <a
+                  href="https://wa.me/919166763655?text=Hello%20Pankaj%20Sir%2C%20I%20am%20interested%20in%20AdScale%20Zen%20services"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors font-semibold"
+                >
+                  <WhatsAppIcon className="h-4 w-4 fill-emerald-600" />
+                  <span>WhatsApp 24/7: +91 9166763655</span>
+                </a>
+              </li>
               <li>
                 <a
                   href="tel:+919166763655"
                   className="inline-flex items-center gap-2 hover:text-purple-600 transition-colors font-medium"
                 >
                   <Phone className="h-3.5 w-3.5 text-purple-600" />
-                  <span>+91 9166763655</span>
+                  <span>Call: +91 9166763655</span>
                 </a>
               </li>
               <li>
@@ -823,6 +879,29 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating 24/7 WhatsApp Support Widget */}
+      <a
+        href="https://wa.me/919166763655?text=Hello%20Pankaj%20Sir%2C%20I%20am%20interested%20in%20AdScale%20Zen%20services"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 group flex items-center gap-2.5 bg-emerald-500 hover:bg-emerald-600 text-white pl-3.5 pr-4 py-3 rounded-full shadow-2xl shadow-emerald-500/40 hover:scale-105 transition-all duration-200"
+        aria-label="24/7 WhatsApp Support"
+      >
+        <div className="relative">
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full animate-ping" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-200 rounded-full" />
+          <WhatsAppIcon className="h-6 w-6 fill-white" />
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[10px] font-semibold leading-none text-emerald-100 uppercase tracking-wider">
+            24/7 Support
+          </span>
+          <span className="text-xs font-bold leading-tight mt-0.5">
+            Chat on WhatsApp
+          </span>
+        </div>
+      </a>
     </div>
   );
 }

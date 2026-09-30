@@ -149,20 +149,7 @@ export async function GET(request: Request) {
       )
     }
 
-    // Fetch all whatsapp configs to check verify tokens
-    const { data: configs, error: configError } = await supabaseAdmin()
-      .from('whatsapp_config')
-      .select('id, verify_token')
-
-    if (configError || !configs) {
-      console.error('Error fetching configs for verification:', configError)
-      return NextResponse.json(
-        { error: 'Verification failed' },
-        { status: 403 }
-      )
-    }
-
-    // Check against global environment verify token
+    // Check against global environment verify token first (fast path, no DB call needed)
     const globalVerifyToken =
       process.env.WHATSAPP_VERIFY_TOKEN ||
       process.env.META_VERIFY_TOKEN ||
@@ -173,6 +160,19 @@ export async function GET(request: Request) {
         status: 200,
         headers: { 'Content-Type': 'text/plain' },
       })
+    }
+
+    // Fallback: Fetch whatsapp configs from database to check per-tenant verify tokens
+    const { data: configs, error: configError } = await supabaseAdmin()
+      .from('whatsapp_config')
+      .select('id, verify_token')
+
+    if (configError || !configs) {
+      console.error('Error fetching configs for verification:', configError)
+      return NextResponse.json(
+        { error: 'Verification failed' },
+        { status: 403 }
+      )
     }
 
     // Check if any config's verify_token matches in database.

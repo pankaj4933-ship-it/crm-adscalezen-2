@@ -52,11 +52,16 @@ async function resolveAccountId(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _adminClient: any = null
 function supabaseAdmin() {
-  if (!_adminClient) {
-    _adminClient = createAdminClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) {
+    console.warn(
+      '[whatsapp/config] SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL is missing — skipping admin client. Cross-account duplicate check disabled.'
     )
+    return null
+  }
+  if (!_adminClient) {
+    _adminClient = createAdminClient(url, key)
   }
   return _adminClient
 }
@@ -323,35 +328,29 @@ export async function POST(request: Request) {
     }
 
     // Reject if another account has already claimed this phone_number_id.
-    // wacrm is single-tenant-per-WhatsApp-number — letting two accounts
-    // bind the same number causes the webhook's `.single()` lookup to
-    // throw PGRST116 ("multiple rows"), silently dropping every
-    // inbound message. See issue #136. Post-multi-user we key on
-    // account_id (not user_id) since teammates inside the same account
-    // all share one config; the conflict is between accounts.
-    const { data: claimed, error: claimedError } = await supabaseAdmin()
-      .from('whatsapp_config')
-      .select('account_id')
-      .eq('phone_number_id', phone_number_id)
-      .neq('account_id', accountId)
-      .maybeSingle()
+    const adminClient = supabaseAdmin()
+    if (adminClient) {
+      const { data: claimed, error: claimedError } = await adminClient
+        .from('whatsapp_config')
+        .select('account_id')
+        .eq('phone_number_id', phone_number_id)
+        .neq('account_id', accountId)
+        .maybeSingle()
 
-    if (claimedError) {
-      console.error('Error checking phone_number_id ownership:', claimedError)
-      return NextResponse.json(
-        { error: 'Failed to validate configuration' },
-        { status: 500 }
-      )
-    }
-
-    if (claimed) {
-      return NextResponse.json(
-        {
-          error:
-            'This WhatsApp phone number is already linked to another account on this instance. Each phone number can only be connected to one wacrm user.',
-        },
-        { status: 409 }
-      )
+      if (claimedError) {
+        console.error('Error checking phone_number_id ownership:', claimedError)
+        // Non-fatal — proceed without the duplicate check
+      } else if (claimed) {
+        return NextResponse.json(
+          {
+            error:
+              'This WhatsApp phone number is already linked to another account on this instance. Each phone number can only be connected to one wacrm user.',
+          },
+          { status: 409 }
+        )
+      }
+    } else {
+      console.warn('[whatsapp/config] Cross-account duplicate check skipped (no admin client)')
     }
 
     // Verify credentials with Meta BEFORE saving

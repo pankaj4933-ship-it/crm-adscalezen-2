@@ -306,16 +306,42 @@ export function WhatsAppConfig() {
     if (result.code) {
       try {
         setLoading(true);
-        const res = await fetch('/api/auth/meta/callback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code: result.code,
-            waba_id: result.waba_id,
-            phone_number_id: result.phone_number_id,
-          }),
-        });
-        const data = await res.json();
+        let res: Response;
+        let data: any;
+        try {
+          res = await fetch('/api/auth/meta/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              code: result.code,
+              waba_id: result.waba_id,
+              phone_number_id: result.phone_number_id,
+            }),
+          });
+        } catch (networkErr: any) {
+          console.error('Network error calling /api/auth/meta/callback:', networkErr);
+          toast.error(
+            `Network error: Could not reach /api/auth/meta/callback. ${networkErr?.message || 'Check server logs.'}`,
+            { duration: 12000 }
+          );
+          setLoading(false);
+          return;
+        }
+
+        // Try to parse JSON; fallback to raw text for debugging
+        const rawText = await res.text();
+        try {
+          data = JSON.parse(rawText);
+        } catch {
+          console.error('Non-JSON response from /api/auth/meta/callback:', rawText.slice(0, 500));
+          toast.error(
+            `Server error (HTTP ${res.status}): ${rawText.slice(0, 200) || 'No response body'}`,
+            { duration: 12000 }
+          );
+          setLoading(false);
+          return;
+        }
+
         if (res.ok && data.success) {
           toast.success(
             data.phone_info?.display_phone_number
@@ -335,7 +361,7 @@ export function WhatsAppConfig() {
         }
       } catch (err: any) {
         console.error('Meta OAuth code exchange error:', err);
-        toast.error('Failed to communicate with server for Facebook token exchange.', { duration: 8000 });
+        toast.error(`Facebook token exchange failed: ${err?.message || 'Unknown error'}`, { duration: 8000 });
       } finally {
         setLoading(false);
       }

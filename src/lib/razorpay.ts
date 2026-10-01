@@ -1,12 +1,14 @@
 import crypto from 'crypto';
 
-export const RAZORPAY_KEY_ID =
+export const RAZORPAY_KEY_ID = (
   process.env.RAZORPAY_KEY_ID ||
   process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-  'rzp_live_TgneYi4y1wFtMS';
+  'rzp_live_TgneYi4y1wFtMS'
+).trim();
 
-export const RAZORPAY_KEY_SECRET =
-  process.env.RAZORPAY_KEY_SECRET || 'hxgQBYqgXGAJ3mK1p6Ph9mhs';
+export const RAZORPAY_KEY_SECRET = (
+  process.env.RAZORPAY_KEY_SECRET || 'hxgQBYqgXGAJ3mK1p6Ph9mhs'
+).trim();
 
 export interface RazorpayOrderResponse {
   id: string;
@@ -35,8 +37,22 @@ export async function createRazorpayOrder(
 ): Promise<RazorpayOrderResponse> {
   const amountInPaise = Math.round(amountInInr * 100);
 
+  const keyId = (
+    process.env.RAZORPAY_KEY_ID ||
+    process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+    'rzp_live_TgneYi4y1wFtMS'
+  ).trim();
+
+  const keySecret = (
+    process.env.RAZORPAY_KEY_SECRET || 'hxgQBYqgXGAJ3mK1p6Ph9mhs'
+  ).trim();
+
+  if (!keyId || !keySecret) {
+    throw new Error('Razorpay API keys (Key ID or Key Secret) are missing in environment variables.');
+  }
+
   const authHeader = `Basic ${Buffer.from(
-    `${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`
+    `${keyId}:${keySecret}`
   ).toString('base64')}`;
 
   const response = await fetch('https://api.razorpay.com/v1/orders', {
@@ -57,6 +73,14 @@ export async function createRazorpayOrder(
 
   if (!response.ok) {
     console.error('Razorpay order creation failed:', data);
+    if (
+      response.status === 401 ||
+      data.error?.description?.toLowerCase().includes('authentication')
+    ) {
+      throw new Error(
+        'Razorpay Authentication Failed: Invalid Key ID or Key Secret. Please verify your Razorpay API Keys in Razorpay Dashboard.'
+      );
+    }
     throw new Error(data.error?.description || 'Failed to create Razorpay order');
   }
 
@@ -73,8 +97,12 @@ export function verifyRazorpaySignature(
 ): boolean {
   if (!orderId || !paymentId || !signature) return false;
 
+  const keySecret = (
+    process.env.RAZORPAY_KEY_SECRET || 'hxgQBYqgXGAJ3mK1p6Ph9mhs'
+  ).trim();
+
   const expectedSignature = crypto
-    .createHmac('sha256', RAZORPAY_KEY_SECRET)
+    .createHmac('sha256', keySecret)
     .update(`${orderId}|${paymentId}`)
     .digest('hex');
 

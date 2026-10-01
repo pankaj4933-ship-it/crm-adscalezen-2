@@ -141,14 +141,17 @@ export default function FlowsPage() {
           trigger_config: { keywords: [] },
         }),
       });
-      if (!res.ok) throw new Error(`Create failed: ${res.status}`);
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error ?? `Create failed: ${res.status}`);
+      }
       const json = (await res.json()) as { flow: FlowRow };
       setCreateOpen(false);
       setNewName("");
       router.push(`/flows/${json.flow.id}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error(t("createError"));
+      toast.error(err instanceof Error ? err.message : t("createError"));
     } finally {
       setCreating(false);
     }

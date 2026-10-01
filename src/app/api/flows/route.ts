@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const admin = supabaseAdmin()
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseAdmin() : supabase
 
   // -------- Template clone path --------
   if (body.template_slug) {
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         { status: 400 },
       )
     }
-    const { data: flow, error: flowErr } = await admin
+    let { data: flow, error: flowErr } = await admin
       .from('flows')
       .insert({
         user_id: userId,
@@ -121,6 +121,27 @@ export async function POST(request: Request) {
       })
       .select()
       .single()
+
+    // Fallback to user client if admin failed
+    if (flowErr && admin !== supabase) {
+      const retry = await supabase
+        .from('flows')
+        .insert({
+          user_id: userId,
+          account_id: accountId,
+          name: body.name?.trim() || template.name,
+          description: template.description,
+          status: 'draft',
+          trigger_type: template.trigger_type,
+          trigger_config: template.trigger_config,
+          entry_node_id: template.entry_node_id,
+        })
+        .select()
+        .single()
+      flow = retry.data
+      flowErr = retry.error
+    }
+
     if (flowErr || !flow) {
       return NextResponse.json(
         { error: flowErr?.message ?? 'flow insert failed' },
@@ -156,7 +177,7 @@ export async function POST(request: Request) {
   }
   const trigger_type = body.trigger_type ?? 'keyword'
 
-  const { data, error } = await admin
+  let { data, error } = await admin
     .from('flows')
     .insert({
       user_id: userId,
@@ -169,6 +190,26 @@ export async function POST(request: Request) {
     })
     .select()
     .single()
+
+  // Fallback to user client if admin failed
+  if (error && admin !== supabase) {
+    const retry = await supabase
+      .from('flows')
+      .insert({
+        user_id: userId,
+        account_id: accountId,
+        name: body.name.trim(),
+        description: body.description ?? null,
+        status: 'draft',
+        trigger_type,
+        trigger_config: body.trigger_config ?? {},
+      })
+      .select()
+      .single()
+    data = retry.data
+    error = retry.error
+  }
+
   if (error || !data) {
     return NextResponse.json(
       { error: error?.message ?? 'insert failed' },

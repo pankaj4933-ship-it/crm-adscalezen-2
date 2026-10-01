@@ -116,7 +116,7 @@ export async function PUT(
     )
   }
 
-  const admin = supabaseAdmin()
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseAdmin() : guard.supabase
 
   // Update the flow row first — the body may not include `nodes` (a
   // header-only save for editing the trigger config without touching
@@ -135,10 +135,17 @@ export async function PUT(
   if (body.fallback_policy !== undefined)
     flowPatch.fallback_policy = body.fallback_policy
 
-  const { error: updErr } = await admin
+  let { error: updErr } = await admin
     .from('flows')
     .update(flowPatch)
     .eq('id', id)
+  if (updErr && admin !== guard.supabase) {
+    const retry = await guard.supabase
+      .from('flows')
+      .update(flowPatch)
+      .eq('id', id)
+    updErr = retry.error
+  }
   if (updErr) {
     return NextResponse.json({ error: updErr.message }, { status: 500 })
   }
@@ -205,7 +212,8 @@ export async function DELETE(
   // mechanism in v1, but that's intentional: deleting a flow is a
   // deliberate destructive action and the partial unique index will
   // free up the contact for new triggers immediately.
-  const { error } = await supabaseAdmin().from('flows').delete().eq('id', id)
+  const client = process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseAdmin() : guard.supabase
+  const { error } = await client.from('flows').delete().eq('id', id)
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

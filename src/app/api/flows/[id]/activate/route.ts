@@ -63,23 +63,40 @@ export async function POST(
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const admin = supabaseAdmin()
+  const client = process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseAdmin() : supabase
 
   if (status === 'active') {
     // Re-load with the full payload the validator needs.
-    const [{ data: flow }, { data: nodes }] = await Promise.all([
-      admin
+    let [{ data: flow }, { data: nodes }] = await Promise.all([
+      client
         .from('flows')
         .select('name, trigger_type, trigger_config, entry_node_id')
         .eq('id', id)
         .maybeSingle(),
-      admin
+      client
         .from('flow_nodes')
         .select('node_key, node_type, config')
         .eq('flow_id', id),
     ])
+
+    if (!flow && client !== supabase) {
+      const retry = await Promise.all([
+        supabase
+          .from('flows')
+          .select('name, trigger_type, trigger_config, entry_node_id')
+          .eq('id', id)
+          .maybeSingle(),
+        supabase
+          .from('flow_nodes')
+          .select('node_key, node_type, config')
+          .eq('flow_id', id),
+      ])
+      flow = retry[0].data
+      nodes = retry[1].data
+    }
+
     if (!flow) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Flow not found' }, { status: 404 })
     }
     const issues = validateFlowForActivation(
       flow as {
@@ -106,12 +123,24 @@ export async function POST(
     }
   }
 
-  const { data: updated, error } = await admin
+  let { data: updated, error } = await client
     .from('flows')
     .update({ status, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .maybeSingle()
+
+  if (error && client !== supabase) {
+    const retry = await supabase
+      .from('flows')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .maybeSingle()
+    updated = retry.data
+    error = retry.error
+  }
+
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

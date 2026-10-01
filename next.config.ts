@@ -96,6 +96,14 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "@xyflow/react",
+      "recharts",
+    ],
+  },
 
   /**
    * Cross-origin dev access (Next.js 16).

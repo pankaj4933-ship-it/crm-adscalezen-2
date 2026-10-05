@@ -23,6 +23,7 @@ import {
   Shield,
   Award,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -176,7 +177,7 @@ export default function LandingPage() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-600">
+          <nav className="hidden xl:flex items-center gap-6 text-sm font-medium text-slate-600">
             <Link href="/" className="hover:text-purple-600 transition-colors">
               Home
             </Link>
@@ -201,29 +202,31 @@ export default function LandingPage() {
           </nav>
 
           {/* Right Action CTAs */}
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
             <Link href="/login">
               <Button
                 variant="ghost"
-                className="text-slate-700 hover:text-purple-700 hover:bg-purple-50 font-medium text-sm"
+                className="text-slate-700 hover:text-purple-700 hover:bg-purple-50 font-medium text-sm px-3"
               >
                 Login
               </Button>
             </Link>
             <a
-              href="https://chat.whatsapp.com/KabZOC7HKg02VWjPd4eav7"
+              href="https://crm.adscalezen.online"
               target="_blank"
               rel="noopener noreferrer"
+              className="inline-flex"
             >
               <Button
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm shadow-md shadow-emerald-600/25 px-4 flex items-center gap-2 border border-emerald-500/40"
+                className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:via-emerald-400 hover:to-teal-500 text-white font-semibold text-sm shadow-md shadow-emerald-600/25 hover:shadow-lg hover:shadow-emerald-600/35 px-4 flex items-center gap-2 border border-emerald-400/40 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <WhatsAppIcon className="h-4 w-4 fill-white" />
-                <span>Join Official Community</span>
+                <WhatsAppIcon className="h-4 w-4 fill-white shrink-0" />
+                <span>WhatsApp API Dashboard</span>
+                <ExternalLink className="h-3.5 w-3.5 opacity-80 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Button>
             </a>
             <Link href="/dashboard">
-              <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-4">
+              <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 hover:via-indigo-700 hover:to-blue-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-3.5 rounded-xl">
                 Access Dashboard
               </Button>
             </Link>
@@ -233,7 +236,7 @@ export default function LandingPage() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+            className="xl:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -242,7 +245,7 @@ export default function LandingPage() {
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-b border-slate-200 bg-white/95 backdrop-blur-md px-6 pt-4 pb-6 flex flex-col gap-3 shadow-lg">
+          <div className="xl:hidden border-b border-slate-200 bg-white/95 backdrop-blur-md px-6 pt-4 pb-6 flex flex-col gap-3 shadow-lg">
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
@@ -301,31 +304,44 @@ export default function LandingPage() {
             </Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-slate-200">
               <a
+                href="https://crm.adscalezen.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full"
+              >
+                <Button className="w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 py-2.5 rounded-xl">
+                  <WhatsAppIcon className="h-4 w-4 fill-white shrink-0" />
+                  <span>WhatsApp API Dashboard</span>
+                  <ExternalLink className="h-3.5 w-3.5 opacity-80" />
+                </Button>
+              </a>
+              <a
                 href="https://chat.whatsapp.com/KabZOC7HKg02VWjPd4eav7"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full"
               >
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center justify-center gap-2">
-                  <WhatsAppIcon className="h-4 w-4 fill-white" />
+                <Button variant="outline" className="w-full border-emerald-600/40 text-emerald-700 hover:bg-emerald-50 font-medium flex items-center justify-center gap-2 rounded-xl">
+                  <WhatsAppIcon className="h-4 w-4 fill-emerald-600" />
                   <span>Join Official Community</span>
                 </Button>
               </a>
               <div className="grid grid-cols-2 gap-2 mt-1">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full text-sm">
+                  <Button variant="outline" className="w-full text-sm rounded-xl">
                     Login
                   </Button>
                 </Link>
                 <Link href="/subscription" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full text-sm">
+                  <Button variant="outline" className="w-full text-sm rounded-xl">
                     Pricing
                   </Button>
                 </Link>
               </div>
               <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold">
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl">
                   Access Dashboard
                 </Button>
               </Link>

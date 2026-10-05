@@ -41,7 +41,8 @@
     "defaultAvatar": "아바타",
     "menuProfile": "프로필",
     "menuSettings": "설정",
-    "menuSignOut": "로그아웃"
+    "menuSignOut": "로그아웃",
+    "whatsAppDashboard": "WhatsApp API Dashboard"
   },
   "Header": {
     "dashboard": "대시보드",
@@ -58,7 +59,8 @@
     "defaultAvatar": "아바타",
     "menuProfile": "프로필",
     "menuSettings": "설정",
-    "menuSignOut": "로그아웃"
+    "menuSignOut": "로그아웃",
+    "whatsAppDashboard": "WhatsApp API Dashboard"
   },
   "ModeToggle": {
     "switchMode": "{mode} 모드로 전환"

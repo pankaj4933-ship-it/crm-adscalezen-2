@@ -41,7 +41,8 @@
     "defaultAvatar": "Avatar",
     "menuProfile": "Profile",
     "menuSettings": "Settings",
-    "menuSignOut": "Sign out"
+    "menuSignOut": "Sign out",
+    "whatsAppDashboard": "WhatsApp API Dashboard"
   },
   "Header": {
     "dashboard": "Dashboard",
@@ -58,7 +59,8 @@
     "defaultAvatar": "Avatar",
     "menuProfile": "Profile",
     "menuSettings": "Settings",
-    "menuSignOut": "Sign out"
+    "menuSignOut": "Sign out",
+    "whatsAppDashboard": "WhatsApp API Dashboard"
   },
   "ModeToggle": {
     "switchMode": "Switch to {mode} mode"

@@ -52,8 +52,8 @@ declare global {
   }
 }
 
-const APP_ID = process.env.NEXT_PUBLIC_META_APP_ID ?? '';
-const CONFIG_ID = process.env.NEXT_PUBLIC_META_CONFIG_ID ?? '';
+const APP_ID = (process.env.NEXT_PUBLIC_META_APP_ID ?? '').trim();
+const CONFIG_ID = (process.env.NEXT_PUBLIC_META_CONFIG_ID ?? '').trim();
 
 export function EmbeddedSignupButton({
   onSuccess,
@@ -63,6 +63,16 @@ export function EmbeddedSignupButton({
   const [sdkReady, setSdkReady] = useState(false);
   const [loading, setLoading] = useState(false);
   const sessionDataRef = useRef<{ phone_number_id?: string; waba_id?: string } | null>(null);
+  const loginTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clean up any pending timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (loginTimeoutRef.current) {
+        clearTimeout(loginTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /*
    * ---------------------------------------------------------
@@ -188,12 +198,20 @@ export function EmbeddedSignupButton({
       }
 
       if (data.event === 'CANCEL') {
+        if (loginTimeoutRef.current) {
+          clearTimeout(loginTimeoutRef.current);
+          loginTimeoutRef.current = null;
+        }
         setLoading(false);
         onError?.('Facebook signup was cancelled.');
         return;
       }
 
       if (data.event === 'ERROR') {
+        if (loginTimeoutRef.current) {
+          clearTimeout(loginTimeoutRef.current);
+          loginTimeoutRef.current = null;
+        }
         setLoading(false);
 
         onError?.(
@@ -245,12 +263,33 @@ export function EmbeddedSignupButton({
     setLoading(true);
     sessionDataRef.current = null;
 
+    if (loginTimeoutRef.current) {
+      clearTimeout(loginTimeoutRef.current);
+    }
+
+    // Safety timeout: Meta popup could be closed or blocked by browser without triggering callback
+    loginTimeoutRef.current = setTimeout(() => {
+      setLoading((currentLoading) => {
+        if (currentLoading) {
+          onError?.(
+            'Meta login popup timed out or was closed/blocked. Please ensure popups are allowed for this site, or enter your Phone Number ID manually below.',
+          );
+          return false;
+        }
+        return currentLoading;
+      });
+    }, 45000);
+
     /*
      * IMPORTANT:
      * FB.login must happen directly from the button click.
      */
     window.FB.login(
       (response) => {
+        if (loginTimeoutRef.current) {
+          clearTimeout(loginTimeoutRef.current);
+          loginTimeoutRef.current = null;
+        }
         console.log('Facebook login response:', response);
 
         const code = response?.authResponse?.code;
@@ -328,7 +367,7 @@ export function EmbeddedSignupButton({
 
         if (response?.status === 'unknown') {
           onError?.(
-            'Facebook login was cancelled or the popup was blocked.',
+            'Facebook login was cancelled or the popup was blocked by your browser.',
           );
         } else {
           onError?.(
@@ -342,7 +381,6 @@ export function EmbeddedSignupButton({
         override_default_response_type: true,
         extras: {
           setup: {},
-          featureType: 'whatsapp_business_app_onboarding',
           sessionInfoVersion: '3',
         },
       },
@@ -351,17 +389,28 @@ export function EmbeddedSignupButton({
 
   const notConfigured = !APP_ID || !CONFIG_ID;
 
+  const handleButtonClick = useCallback(() => {
+    if (loading) {
+      if (loginTimeoutRef.current) {
+        clearTimeout(loginTimeoutRef.current);
+        loginTimeoutRef.current = null;
+      }
+      setLoading(false);
+      return;
+    }
+    handleClick();
+  }, [loading, handleClick]);
+
   return (
     <Button
       type="button"
-      onClick={handleClick}
+      onClick={handleButtonClick}
       disabled={
         disabled ||
-        loading ||
         !sdkReady ||
         notConfigured
       }
-      className="h-11 w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#1665d8] text-white font-semibold shadow-md transition-all"
+      className="h-11 w-full flex items-center justify-center gap-3 bg-[#1877F2] hover:bg-[#1665d8] text-white font-semibold shadow-md transition-all cursor-pointer"
     >
       {loading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
@@ -381,7 +430,7 @@ export function EmbeddedSignupButton({
         {notConfigured
           ? 'Configure Meta App first'
           : loading
-            ? 'Opening Facebook…'
+            ? 'Opening Facebook… (Click to Cancel)'
             : 'Connect with Facebook'}
       </span>
     </Button>

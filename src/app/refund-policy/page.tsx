@@ -11,8 +11,10 @@ import {
   Phone,
   Mail,
   Shield,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 export default function RefundPolicyPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -71,19 +73,28 @@ export default function RefundPolicyPage() {
             </Link>
           </nav>
 
-          <div className="hidden sm:flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2.5">
             <Link href="/login">
-              <Button variant="ghost" className="text-slate-700 hover:text-purple-700 hover:bg-purple-50 font-medium text-sm">
+              <Button variant="ghost" className="text-slate-700 hover:text-purple-700 hover:bg-purple-50 font-medium text-sm px-3">
                 Login
               </Button>
             </Link>
-            <Link href="/signup">
-              <Button variant="outline" className="border-slate-300 hover:border-purple-400 text-slate-800 hover:bg-slate-50 font-medium text-sm shadow-xs">
-                Create Account
+            <a
+              href="https://crm.adscalezen.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex"
+            >
+              <Button
+                className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:via-emerald-400 hover:to-teal-500 text-white font-semibold text-sm shadow-md shadow-emerald-600/25 hover:shadow-lg hover:shadow-emerald-600/35 px-4 flex items-center gap-2 border border-emerald-400/40 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <WhatsAppIcon className="h-4 w-4 fill-white shrink-0" />
+                <span>WhatsApp API Dashboard</span>
+                <ExternalLink className="h-3.5 w-3.5 opacity-80 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Button>
-            </Link>
+            </a>
             <Link href="/dashboard">
-              <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-4">
+              <Button className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-700 text-white font-semibold text-sm shadow-md shadow-indigo-500/20 px-3.5 rounded-xl">
                 Access Dashboard
               </Button>
             </Link>
@@ -117,16 +128,29 @@ export default function RefundPolicyPage() {
               Contact Us
             </Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-slate-200">
-              <div className="grid grid-cols-2 gap-2">
+              <a
+                href="https://crm.adscalezen.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full"
+              >
+                <Button className="w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 py-2.5 rounded-xl">
+                  <WhatsAppIcon className="h-4 w-4 fill-white shrink-0" />
+                  <span>WhatsApp API Dashboard</span>
+                  <ExternalLink className="h-3.5 w-3.5 opacity-80" />
+                </Button>
+              </a>
+              <div className="grid grid-cols-2 gap-2 mt-1">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full text-sm">Login</Button>
+                  <Button variant="outline" className="w-full text-sm rounded-xl">Login</Button>
                 </Link>
                 <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full text-sm">Create Account</Button>
+                  <Button variant="outline" className="w-full text-sm rounded-xl">Create Account</Button>
                 </Link>
               </div>
               <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold">
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl">
                   Access Dashboard
                 </Button>
               </Link>

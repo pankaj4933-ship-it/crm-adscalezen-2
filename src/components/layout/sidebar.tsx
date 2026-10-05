@@ -11,6 +11,7 @@ import {
   Bell,
   Bot,
   Crown,
+  ExternalLink,
   GitBranch,
   LayoutDashboard,
   LogOut,
@@ -26,6 +27,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import type { AccountRole } from "@/lib/auth/roles";
 
 // Per-role chip metadata used in the sidebar's account strip + the
@@ -274,7 +276,23 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             })}
           </ul>
 
-          <div className="my-4 border-t border-border" />
+          <div className="my-3 border-t border-border" />
+
+          {/* Quick CTA to WhatsApp API Dashboard */}
+          <div className="mb-3 px-1">
+            <a
+              href="https://crm.adscalezen.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-400 transition-all hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:text-emerald-300 shadow-xs"
+            >
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 group-hover:scale-105 transition-transform">
+                <WhatsAppIcon className="h-3.5 w-3.5 fill-current" />
+              </div>
+              <span className="flex-1 truncate">{t("whatsAppDashboard")}</span>
+              <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            </a>
+          </div>
 
           <ul className="flex flex-col gap-1">
             {bottomNavItems.map((item) => {

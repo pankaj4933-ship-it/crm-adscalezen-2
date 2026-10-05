@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, Menu, Settings as SettingsIcon, User } from "lucide-react";
+import { ExternalLink, LogOut, Menu, Settings as SettingsIcon, User } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import {
   Avatar,
   AvatarFallback,
@@ -73,7 +74,23 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         </h1>
       </div>
 
-      <div className="flex items-center gap-1 sm:gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <a
+          href="https://crm.adscalezen.online"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden sm:inline-flex items-center"
+        >
+          <button
+            type="button"
+            className="group relative inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm shadow-emerald-600/20 hover:from-emerald-500 hover:via-emerald-400 hover:to-teal-500 hover:shadow-md hover:shadow-emerald-600/30 transition-all duration-200 border border-emerald-400/30 active:scale-95 cursor-pointer"
+          >
+            <WhatsAppIcon className="size-3.5 fill-white shrink-0" />
+            <span>{t("whatsAppDashboard")}</span>
+            <ExternalLink className="size-3 opacity-80 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </button>
+        </a>
+
         <ModeToggle />
 
         <DropdownMenu>
@@ -109,6 +126,23 @@ export function Header({ onOpenSidebar }: HeaderProps) {
               {profile?.email ?? ""}
             </p>
           </div>
+          <DropdownMenuSeparator className="bg-border" />
+          <DropdownMenuItem
+            render={
+              <a
+                href="https://crm.adscalezen.online"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-popover-foreground focus:bg-accent focus:text-accent-foreground flex items-center justify-between"
+              />
+            }
+          >
+            <div className="flex items-center gap-2">
+              <WhatsAppIcon className="size-4 fill-emerald-500" />
+              <span>{t("whatsAppDashboard")}</span>
+            </div>
+            <ExternalLink className="size-3.5 text-muted-foreground ml-auto" />
+          </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-border" />
           <DropdownMenuItem
             render={

@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { ADSCALEZEN_FAVICON_B64, ADSCALEZEN_LOGO_B64 } from "@/lib/brand-assets";
+import { ADSCALEZEN_LOGO_B64 } from "@/lib/brand-assets";
 
 // Serves the official AdScale Zen futuristic chrome ASZ emblem as the favicon.
 // Next.js auto-injects <link rel="icon"> into <head>.
@@ -9,7 +9,7 @@ export const size = { width: 64, height: 64 };
 export const contentType = "image/png";
 
 export default function Icon() {
-  const iconSrc = ADSCALEZEN_FAVICON_B64 || ADSCALEZEN_LOGO_B64;
+  const iconSrc = ADSCALEZEN_LOGO_B64;
 
   return new ImageResponse(
     (

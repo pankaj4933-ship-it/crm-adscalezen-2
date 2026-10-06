@@ -3,33 +3,52 @@ import createNextIntlPlugin from "next-intl/plugin";
 import fs from "node:fs";
 import path from "node:path";
 
-// Ensure uploaded founder photo and logo are synced to public/ and available as base64
+// Ensure uploaded founder photo, logo, and favicon are synced to public/ and available as base64
 try {
-  const dir = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded";
-  const sourceFounder = path.join(dir, "media_1790666171980.jpg");
-  const sourceLogo = path.join(dir, "media_1790666156598.jpg");
+  const currentUploadDir = "/Users/macbookpro/.gemini/antigravity-ide/brain/3b5f18e9-8418-4d83-8716-80b84430a69f/.user_uploaded";
+  const legacyDir = "/Users/macbookpro/.gemini/antigravity-ide/brain/caad7fb6-fdba-47db-be7d-16c3ba209647/.user_uploaded";
+  
+  const sourceFavicon = path.join(currentUploadDir, "media_1791310635558.jpg");
+  const sourceFounder = path.join(legacyDir, "media_1790666171980.jpg");
+  const sourceLogo = fs.existsSync(sourceFavicon) ? sourceFavicon : path.join(legacyDir, "media_1790666156598.jpg");
+  
   const publicDir = path.join(process.cwd(), "public");
+  const appDir = path.join(process.cwd(), "src", "app");
+  const libDir = path.join(process.cwd(), "src", "lib");
 
-  if (fs.existsSync(sourceLogo)) {
+  if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
+  if (!fs.existsSync(libDir)) fs.mkdirSync(libDir, { recursive: true });
+
+  if (fs.existsSync(sourceFavicon)) {
+    fs.copyFileSync(sourceFavicon, path.join(publicDir, "favicon.png"));
+    fs.copyFileSync(sourceFavicon, path.join(publicDir, "favicon.ico"));
+    fs.copyFileSync(sourceFavicon, path.join(publicDir, "apple-touch-icon.png"));
+    fs.copyFileSync(sourceFavicon, path.join(publicDir, "adscalezen-favicon.png"));
+    fs.copyFileSync(sourceFavicon, path.join(publicDir, "adscalezen-logo.png"));
+    fs.copyFileSync(sourceFavicon, path.join(publicDir, "adscalezen-logo.jpg"));
+    fs.copyFileSync(sourceFavicon, path.join(appDir, "icon.png"));
+    fs.copyFileSync(sourceFavicon, path.join(appDir, "apple-icon.png"));
+    fs.copyFileSync(sourceFavicon, path.join(appDir, "favicon.ico"));
+  } else if (fs.existsSync(sourceLogo)) {
     fs.copyFileSync(sourceLogo, path.join(publicDir, "adscalezen-logo.png"));
     fs.copyFileSync(sourceLogo, path.join(publicDir, "adscalezen-logo.jpg"));
   }
+
   if (fs.existsSync(sourceFounder)) {
     fs.copyFileSync(sourceFounder, path.join(publicDir, "pankaj-swami.jpg"));
   }
 
-  if (fs.existsSync(sourceLogo) && fs.existsSync(sourceFounder)) {
-    const logoB64 = fs.readFileSync(sourceLogo).toString("base64");
-    const founderB64 = fs.readFileSync(sourceFounder).toString("base64");
-    const libDir = path.join(process.cwd(), "src", "lib");
-    if (!fs.existsSync(libDir)) fs.mkdirSync(libDir, { recursive: true });
+  const activeLogoSrc = fs.existsSync(sourceFavicon) ? sourceFavicon : sourceLogo;
+  if (fs.existsSync(activeLogoSrc)) {
+    const logoB64 = fs.readFileSync(activeLogoSrc).toString("base64");
+    const founderB64 = fs.existsSync(sourceFounder) ? fs.readFileSync(sourceFounder).toString("base64") : "";
     fs.writeFileSync(
       path.join(libDir, "brand-assets.ts"),
-      `export const ADSCALEZEN_LOGO_B64 = "data:image/png;base64,${logoB64}";\nexport const FOUNDER_PHOTO_B64 = "data:image/jpeg;base64,${founderB64}";\n`
+      `// Auto-generated fallback data URIs for AdScale Zen brand assets\nexport const ADSCALEZEN_LOGO_B64 = "data:image/png;base64,${logoB64}";\nexport const ADSCALEZEN_FAVICON_B64 = "data:image/png;base64,${logoB64}";\nexport const FOUNDER_PHOTO_B64 = "data:image/jpeg;base64,${founderB64}";\n`
     );
   }
-} catch {
-  // Ignore in environments where source path is absent
+} catch (e) {
+  console.warn("Asset sync error:", e);
 }
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");

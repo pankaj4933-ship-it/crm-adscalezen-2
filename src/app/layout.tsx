@@ -26,12 +26,13 @@ export const metadata: Metadata = {
     template: "%s — Adscale Zen",
   },
   description: "Adscale Zen — Scale your customer engagement, sales, and support with modern WhatsApp CRM, embedded onboarding & automations.",
-  robots: {
-    index: false,
-    follow: false,
-  },
   icons: {
-    icon: [{ url: "/icon" }],
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
   formatDetection: {
     email: false,

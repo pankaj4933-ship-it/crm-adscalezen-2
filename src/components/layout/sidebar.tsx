@@ -28,6 +28,7 @@ import {
   Zap,
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { ADSCALEZEN_LOGO_B64 } from "@/lib/brand-assets";
 import type { AccountRole } from "@/lib/auth/roles";
 
 // Per-role chip metadata used in the sidebar's account strip + the
@@ -191,8 +192,12 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             close button is hidden since the sidebar is always-visible. */}
         <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-200">
-              <Zap className="h-4 w-4 fill-white/20 text-white" />
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-xl overflow-hidden bg-slate-950 border border-slate-800 text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform duration-200">
+              <img
+                src={ADSCALEZEN_LOGO_B64}
+                alt="AdScale Zen"
+                className="h-full w-full object-contain p-0.5"
+              />
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold tracking-tight text-foreground">

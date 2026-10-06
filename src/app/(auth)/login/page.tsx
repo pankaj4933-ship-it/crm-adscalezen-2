@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { UsersRound } from "lucide-react";
+import { ADSCALEZEN_LOGO_B64 } from "@/lib/brand-assets";
 
 // `useSearchParams` opts the component out of static prerendering
 // unless it sits under a Suspense boundary. We split the form into
@@ -105,12 +106,10 @@ function LoginPageInner() {
             {inviteToken ? (
               <UsersRound className="h-8 w-8 text-emerald-600" />
             ) : (
-              <Image
-                src="/adscalezen-logo.png"
+              <img
+                src={ADSCALEZEN_LOGO_B64}
                 alt="AdScale Zen Logo"
-                width={64}
-                height={64}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain p-1"
               />
             )}
           </div>

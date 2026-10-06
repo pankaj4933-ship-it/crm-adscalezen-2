@@ -21,18 +21,55 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://adscalezen.online"),
   title: {
-    default: "Adscale Zen — WhatsApp CRM & Marketing Automation",
+    default: "Adscale zen - Best Marketing Agency",
     template: "%s — Adscale Zen",
   },
-  description: "Adscale Zen — Scale your customer engagement, sales, and support with modern WhatsApp CRM, embedded onboarding & automations.",
+  description: "Adscale Zen — Best Marketing Agency. Scale your business with proven marketing systems, high-converting lead generation, WhatsApp CRM, and live automations.",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/icon" },
-      { url: "/favicon.png", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
+      { url: "/icon", type: "image/png", sizes: "64x64" },
     ],
-    apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  openGraph: {
+    title: "Adscale zen - Best Marketing Agency",
+    description: "Adscale Zen — Best Marketing Agency. Scale your business with proven marketing systems, high-converting lead generation, WhatsApp CRM, and live automations.",
+    url: "https://adscalezen.online",
+    siteName: "Adscale Zen",
+    images: [
+      {
+        url: "/adscalezen-logo.png",
+        width: 800,
+        height: 800,
+        alt: "Adscale Zen Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Adscale zen - Best Marketing Agency",
+    description: "Adscale Zen — Best Marketing Agency. Scale your business with proven marketing systems, high-converting lead generation, WhatsApp CRM, and live automations.",
+    images: ["/adscalezen-logo.png"],
   },
   formatDetection: {
     email: false,
@@ -102,6 +139,9 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <Script
           id="theme-boot"
           strategy="beforeInteractive"

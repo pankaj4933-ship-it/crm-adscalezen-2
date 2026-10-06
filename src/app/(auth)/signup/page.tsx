@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { MessageSquare, CheckCircle, UsersRound } from "lucide-react";
 import Image from "next/image";
+import { ADSCALEZEN_LOGO_B64 } from "@/lib/brand-assets";
 
 // `useSearchParams` opts the component out of static prerendering
 // unless wrapped in Suspense — same pattern as /login.
@@ -163,12 +164,10 @@ function SignupPageInner() {
             {inviteToken ? (
               <UsersRound className="h-8 w-8 text-emerald-600" />
             ) : (
-              <Image
-                src="/adscalezen-logo.png"
+              <img
+                src={ADSCALEZEN_LOGO_B64}
                 alt="AdScale Zen Logo"
-                width={64}
-                height={64}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-contain p-1"
               />
             )}
           </div>

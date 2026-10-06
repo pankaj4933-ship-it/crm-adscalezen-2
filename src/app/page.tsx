@@ -26,6 +26,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ADSCALEZEN_LOGO_B64 } from "@/lib/brand-assets";
 
 const testimonials = [
   {
@@ -153,18 +154,11 @@ export default function LandingPage() {
           {/* Brand Logo & Name */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-slate-950 flex items-center justify-center shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform duration-200 border border-slate-800">
-              {!logoError ? (
-                <Image
-                  src="/adscalezen-logo.png"
-                  alt="AdScale Zen Logo"
-                  fill
-                  className="object-contain p-0.5"
-                  onError={() => setLogoError(true)}
-                  priority
-                />
-              ) : (
-                <Zap className="h-6 w-6 text-purple-400" />
-              )}
+              <img
+                src={ADSCALEZEN_LOGO_B64}
+                alt="AdScale Zen Logo"
+                className="h-full w-full object-contain p-0.5"
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-900 bg-clip-text text-transparent">
@@ -772,17 +766,11 @@ export default function LandingPage() {
           <div className="md:col-span-4">
             <div className="flex items-center gap-2.5 mb-3">
               <div className="relative h-9 w-9 rounded-lg overflow-hidden bg-slate-950 flex items-center justify-center border border-slate-800">
-                {!logoError ? (
-                  <Image
-                    src="/adscalezen-logo.png"
-                    alt="AdScale Zen Logo"
-                    fill
-                    className="object-contain p-0.5"
-                    onError={() => setLogoError(true)}
-                  />
-                ) : (
-                  <Zap className="h-4 w-4 text-purple-400" />
-                )}
+                <img
+                  src={ADSCALEZEN_LOGO_B64}
+                  alt="AdScale Zen Logo"
+                  className="h-full w-full object-contain p-0.5"
+                />
               </div>
               <span className="text-lg font-bold text-slate-900">AdScale Zen</span>
             </div>

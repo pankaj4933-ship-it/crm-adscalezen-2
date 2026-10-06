@@ -71,6 +71,24 @@ export const metadata: Metadata = {
     description: "Adscale Zen — Best Marketing Agency. Scale your business with proven marketing systems, high-converting lead generation, WhatsApp CRM, and live automations.",
     images: ["/adscalezen-logo.png"],
   },
+  keywords: [
+    "Adscale Zen",
+    "Adscale zen",
+    "adscale zen",
+    "AdScale Zen",
+    "Adscalezen",
+    "Best Marketing Agency",
+    "Digital Marketing Agency",
+    "WhatsApp CRM",
+    "WhatsApp Marketing",
+    "Meta Ads Agency",
+    "Lead Generation Agency",
+    "Pankaj Swami",
+    "adscalezen.online",
+  ],
+  alternates: {
+    canonical: "https://adscalezen.online",
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -142,6 +160,48 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://adscalezen.online/#organization",
+                  "name": "Adscale Zen",
+                  "alternateName": [
+                    "AdScale Zen",
+                    "Adscalezen",
+                    "AdScale Zen Digital",
+                    "Adscale Zen Agency",
+                  ],
+                  "url": "https://adscalezen.online",
+                  "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://adscalezen.online/adscalezen-logo.png",
+                    "caption": "Adscale Zen Logo",
+                  },
+                  "founder": {
+                    "@type": "Person",
+                    "name": "Pankaj Swami",
+                  },
+                  "description":
+                    "Adscale Zen is the Best Marketing Agency for WhatsApp CRM, Meta Ads scaling, lead generation, and business automations.",
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://adscalezen.online/#website",
+                  "url": "https://adscalezen.online",
+                  "name": "Adscale Zen",
+                  "publisher": {
+                    "@id": "https://adscalezen.online/#organization",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
         <Script
           id="theme-boot"
           strategy="beforeInteractive"

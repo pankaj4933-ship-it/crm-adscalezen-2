@@ -52,28 +52,42 @@ export async function PATCH(
   // Editing an automation is a write — the RLS automations_update policy
   // requires `agent`, but this route mutates via the service-role client
   // which bypasses RLS, so enforce the role here.
+  let ctx: Awaited<ReturnType<typeof requireRole>>
   try {
-    await requireRole('agent')
+    ctx = await requireRole('agent')
   } catch (err) {
     return toErrorResponse(err)
   }
 
-  const user = await requireUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
+  const userId = ctx.userId
   const body = await request.json().catch(() => null)
   if (!body) return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
 
-  const admin = supabaseAdmin()
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseAdmin() : ctx.supabase
 
   // Ownership check before we touch anything. Load the fields we need
   // to compute the post-patch "effective" state for validation.
-  const { data: existing } = await admin
+  let { data: existing } = await admin
     .from('automations')
-    .select('id, user_id, is_active, trigger_type, trigger_config')
+    .select('id, user_id, account_id, is_active, trigger_type, trigger_config')
     .eq('id', id)
     .maybeSingle()
-  if (!existing || existing.user_id !== user.id) {
+
+  if (!existing && admin !== ctx.supabase) {
+    const retry = await ctx.supabase
+      .from('automations')
+      .select('id, user_id, account_id, is_active, trigger_type, trigger_config')
+      .eq('id', id)
+      .maybeSingle()
+    existing = retry.data
+  }
+
+  if (
+    !existing ||
+    (existing.account_id
+      ? existing.account_id !== ctx.accountId
+      : existing.user_id !== userId)
+  ) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
@@ -116,10 +130,17 @@ export async function PATCH(
   }
 
   if (Object.keys(update).length > 0) {
-    const { error: updErr } = await admin
+    let { error: updErr } = await admin
       .from('automations')
       .update(update)
       .eq('id', id)
+    if (updErr && admin !== ctx.supabase) {
+      const retry = await ctx.supabase
+        .from('automations')
+        .update(update)
+        .eq('id', id)
+      updErr = retry.error
+    }
     if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 })
   }
 

@@ -104,8 +104,8 @@ export async function POST(request: Request) {
     }
   }
 
-  const admin = supabaseAdmin()
-  const { data: automation, error: insertErr } = await admin
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY ? supabaseAdmin() : supabase
+  let { data: automation, error: insertErr } = await admin
     .from('automations')
     .insert({
       user_id: user.id,
@@ -118,6 +118,24 @@ export async function POST(request: Request) {
     })
     .select()
     .single()
+
+  if (insertErr && admin !== supabase) {
+    const retry = await supabase
+      .from('automations')
+      .insert({
+        user_id: user.id,
+        account_id: accountId,
+        name: effectiveName,
+        description: effectiveDescription ?? null,
+        trigger_type: effectiveTriggerType,
+        trigger_config: effectiveTriggerConfig ?? {},
+        is_active: !!is_active,
+      })
+      .select()
+      .single()
+    automation = retry.data
+    insertErr = retry.error
+  }
 
   if (insertErr || !automation) {
     return NextResponse.json(

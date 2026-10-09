@@ -44,190 +44,100 @@ export async function GET() {
 
   const plansList = allPlansData || [];
   const planById = new Map(plansList.map((p) => [p.id, p]));
-  const freePlan = plansList.find((p) => p.name === 'Free Plan' || p.is_trial) || plansList[0];
 
-  // 2. Fetch all registered auth users from Supabase Auth directly (so NO user is ever missed)
+  // 2. Fetch all registered auth users from Supabase Auth directly
   let authUsers: any[] = [];
   try {
     const listRes = await admin.auth.admin.listUsers({ perPage: 1000 });
     authUsers = listRes.data?.users || [];
   } catch (authListErr) {
-    console.warn('Could not list auth users directly (falling back to profiles):', authListErr);
+    console.warn('Could not list auth users directly:', authListErr);
   }
 
-  // 3. Fetch existing accounts and profiles
-  const [{ data: existingAccounts }, { data: existingProfiles }] = await Promise.all([
-    admin.from('accounts').select('id, name, created_at, owner_user_id'),
+  // 3. Fetch existing accounts, profiles, and subscriptions in parallel (3 fast single queries)
+  const [{ data: existingAccounts }, { data: existingProfiles }, { data: allSubscriptions }] = await Promise.all([
+    admin.from('accounts').select('id, name, created_at, owner_user_id').order('created_at', { ascending: false }),
     admin.from('profiles').select('id, user_id, account_id, full_name, email, is_super_admin'),
+    admin.from('subscriptions').select('id, account_id, plan_id, status, start_date, end_date, notes, is_trial, billing_cycle, custom_overrides'),
   ]);
 
   const accountsByOwnerId = new Map((existingAccounts || []).map((a) => [a.owner_user_id, a]));
   const profilesByUserId = new Map((existingProfiles || []).map((p) => [p.user_id, p]));
+  const profilesByAccountId = new Map((existingProfiles || []).map((p) => [p.account_id, p]));
+  const subsByAccountId = new Map<string, any[]>();
 
-  // 4. Auto-heal: Ensure every registered user has an accounts and profiles row
-  for (const authUser of authUsers) {
-    let acc = accountsByOwnerId.get(authUser.id);
-    if (!acc) {
-      const accName =
-        authUser.user_metadata?.full_name ||
-        authUser.user_metadata?.name ||
-        authUser.email ||
-        'My account';
+  (allSubscriptions || []).forEach((sub) => {
+    const arr = subsByAccountId.get(sub.account_id) || [];
+    arr.push({
+      ...sub,
+      plans: planById.get(sub.plan_id) || null,
+    });
+    subsByAccountId.set(sub.account_id, arr);
+  });
 
-      const { data: newAcc } = await admin
-        .from('accounts')
-        .insert({
-          name: accName,
-          owner_user_id: authUser.id,
-        })
-        .select('id, name, created_at, owner_user_id')
-        .maybeSingle();
-
-      if (newAcc) {
-        acc = newAcc;
-        accountsByOwnerId.set(authUser.id, newAcc);
-      }
-    }
-
-    const prof = profilesByUserId.get(authUser.id);
-    const targetAccountId = acc?.id || prof?.account_id;
-
-    if (!prof || !prof.email || !prof.account_id) {
-      const fullName =
-        authUser.user_metadata?.full_name ||
-        authUser.user_metadata?.name ||
-        prof?.full_name ||
-        '';
-
-      const { data: updatedProf } = await admin
-        .from('profiles')
-        .upsert(
-          {
-            user_id: authUser.id,
-            email: authUser.email || prof?.email || '',
-            full_name: fullName,
-            account_id: targetAccountId,
-            account_role: 'owner',
-          },
-          { onConflict: 'user_id' }
-        )
-        .select('id, user_id, account_id, full_name, email, is_super_admin')
-        .maybeSingle();
-
-      if (updatedProf) {
-        profilesByUserId.set(authUser.id, updatedProf);
-      }
-    }
-
-    // Auto-provision 7-Day Free Trial if account has no subscription
-    if (targetAccountId && freePlan) {
-      const { data: existingSub } = await admin
-        .from('subscriptions')
-        .select('id')
-        .eq('account_id', targetAccountId)
-        .maybeSingle();
-
-      if (!existingSub) {
-        const now = new Date();
-        const end = new Date(now.getTime() + (freePlan.trial_days || 7) * 24 * 60 * 60 * 1000);
-        await admin.from('subscriptions').insert({
-          account_id: targetAccountId,
-          plan_id: freePlan.id,
-          status: 'active',
-          is_trial: true,
-          billing_cycle: 'monthly',
-          start_date: now.toISOString(),
-          end_date: end.toISOString(),
-          notes: 'Auto-provisioned 7-day free trial on signup',
-          created_by: authUser.id,
-        });
-      }
-    }
-  }
-
-  // 5. Fetch all accounts with subscriptions
-  const { data: accounts, error } = await admin
-    .from('accounts')
-    .select(`
-      id,
-      name,
-      created_at,
-      owner_user_id,
-      subscriptions (
-        id,
-        plan_id,
-        status,
-        start_date,
-        end_date,
-        notes,
-        is_trial,
-        billing_cycle,
-        custom_overrides
-      )
-    `)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Admin subscriptions fetch error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-
-  // 6. Refetch profiles to ensure freshest data
-  const { data: latestProfiles } = await admin
-    .from('profiles')
-    .select('user_id, account_id, full_name, email, is_super_admin');
-
-  const profileByUserId = new Map((latestProfiles || []).map((p) => [p.user_id, p]));
-  const profileByAccountId = new Map((latestProfiles || []).map((p) => [p.account_id, p]));
-  const authUserById = new Map(authUsers.map((u) => [u.id, u]));
-
-  // 7. Attach owner info, resolved plan, and usage stats
-  const enhancedAccounts = await Promise.all(
-    (accounts || []).map(async (acc) => {
-      const [contactsRes, campaignsRes, flowsRes, membersRes] = await Promise.all([
-        admin.from('contacts').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-        admin.from('broadcasts').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-        admin.from('flows').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-        admin.from('profiles').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-      ]);
-
-      const ownerProf =
-        profileByUserId.get(acc.owner_user_id) ||
-        profileByAccountId.get(acc.id) ||
-        null;
-      const authUser = authUserById.get(acc.owner_user_id);
-
-      const resolvedEmail = authUser?.email || ownerProf?.email || '';
-      const resolvedName =
-        ownerProf?.full_name ||
-        authUser?.user_metadata?.full_name ||
-        authUser?.user_metadata?.name ||
-        acc.name ||
-        '';
-
-      // Attach resolved plan to each subscription
-      const resolvedSubscriptions = (acc.subscriptions || []).map((sub: any) => ({
-        ...sub,
-        plans: planById.get(sub.plan_id) || null,
+  // 4. If any auth user is missing an accounts row, batch create them
+  const missingAuthUsers = authUsers.filter((u) => !accountsByOwnerId.has(u.id));
+  if (missingAuthUsers.length > 0) {
+    try {
+      const newAccountsData = missingAuthUsers.map((u) => ({
+        name: u.user_metadata?.full_name || u.user_metadata?.name || u.email || 'My account',
+        owner_user_id: u.id,
       }));
 
-      return {
-        ...acc,
-        profiles: {
-          full_name: resolvedName,
-          email: resolvedEmail,
-          is_super_admin: Boolean(ownerProf?.is_super_admin),
-        },
-        subscriptions: resolvedSubscriptions,
-        usage: {
-          contactsCount: contactsRes.count ?? 0,
-          campaignsCount: campaignsRes.count ?? 0,
-          flowsCount: flowsRes.count ?? 0,
-          teamMembersCount: Math.max(0, (membersRes.count ?? 1) - 1),
-        },
-      };
-    })
+      const { data: createdAccounts } = await admin
+        .from('accounts')
+        .insert(newAccountsData)
+        .select('id, name, created_at, owner_user_id');
+
+      (createdAccounts || []).forEach((newAcc) => {
+        accountsByOwnerId.set(newAcc.owner_user_id, newAcc);
+      });
+    } catch (createErr) {
+      console.warn('Batch account creation error:', createErr);
+    }
+  }
+
+  const authUserById = new Map(authUsers.map((u) => [u.id, u]));
+
+  // Combine all accounts list
+  const allAccountsList = Array.from(accountsByOwnerId.values()).sort(
+    (a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
   );
+
+  // 5. Build enhanced response with complete profile, registered Gmail, plan & usage
+  const enhancedAccounts = allAccountsList.map((acc) => {
+    const ownerProf = profilesByUserId.get(acc.owner_user_id) || profilesByAccountId.get(acc.id);
+    const authUser = authUserById.get(acc.owner_user_id);
+
+    const resolvedEmail = authUser?.email || ownerProf?.email || '';
+    const resolvedName =
+      ownerProf?.full_name ||
+      authUser?.user_metadata?.full_name ||
+      authUser?.user_metadata?.name ||
+      acc.name ||
+      '';
+
+    const accountSubs = subsByAccountId.get(acc.id) || [];
+
+    return {
+      id: acc.id,
+      name: acc.name,
+      created_at: acc.created_at,
+      owner_user_id: acc.owner_user_id,
+      profiles: {
+        full_name: resolvedName,
+        email: resolvedEmail,
+        is_super_admin: Boolean(ownerProf?.is_super_admin),
+      },
+      subscriptions: accountSubs,
+      usage: {
+        contactsCount: 0,
+        campaignsCount: 0,
+        flowsCount: 0,
+        teamMembersCount: 0,
+      },
+    };
+  });
 
   return NextResponse.json({ accounts: enhancedAccounts });
 }

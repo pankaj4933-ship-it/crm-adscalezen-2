@@ -225,15 +225,26 @@ export default function AdminPage() {
         fetch('/api/admin/subscriptions'),
         supabase.from('plans').select('*').neq('name', 'Scale').order('sort_order', { ascending: true }),
       ]);
-      const accData = await accRes.json();
-      if (accRes.ok) setAccounts(accData.accounts ?? []);
-      else toast.error(accData.error ?? 'Failed to load accounts');
+
+      let accData: any = {};
+      try {
+        accData = await accRes.json();
+      } catch (jsonErr) {
+        console.error('Failed to parse admin subscriptions JSON:', jsonErr);
+      }
+
+      if (accRes.ok) {
+        setAccounts(accData.accounts ?? []);
+      } else {
+        toast.error(accData.error ?? `Failed to load accounts (${accRes.status})`);
+      }
 
       if (!planRes.error) {
         setPlans((planRes.data ?? []).filter((p) => p.name !== 'Scale'));
       }
-    } catch (e) {
-      toast.error('Network error loading admin data');
+    } catch (e: any) {
+      console.error('Admin page fetchData error:', e);
+      toast.error(e?.message ?? 'Network error loading admin data');
     } finally {
       setLoading(false);
       setRefreshing(false);

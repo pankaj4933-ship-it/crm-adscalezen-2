@@ -135,7 +135,7 @@ export async function GET() {
   const customFieldsUsed = customFieldsCountRes.count ?? 0;
 
   // Active plan & overrides
-  const activePlan: Plan | null = (subscription?.plans as unknown as Plan) ?? allPlans.find(p => p.id === subscription?.plan_id) ?? null;
+  const activePlan: Plan | null = allPlans.find(p => p.id === subscription?.plan_id) ?? null;
   const overrides: CustomOverrides = (subscription?.custom_overrides as CustomOverrides) || {};
 
   // Compute effective limits (overrides win if defined)
@@ -217,7 +217,7 @@ export async function GET() {
   };
 
   return NextResponse.json({
-    subscription,
+    subscription: subscription ? { ...subscription, plans: activePlan } : null,
     plan: activePlan,
     plans: allPlans,
     isActive: subscription?.status === 'active' && !isExpired,
@@ -314,8 +314,7 @@ export async function POST(request: Request) {
       notes,
       billing_cycle,
       is_trial,
-      custom_overrides,
-      plans (*)
+      custom_overrides
     `)
     .single();
 
@@ -327,6 +326,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     success: true,
     message: isTrial ? '7-Day Free Trial activated successfully!' : `Subscribed to ${targetPlan.name} successfully!`,
-    subscription: newSub,
+    subscription: newSub ? { ...newSub, plans: targetPlan } : null,
   });
 }

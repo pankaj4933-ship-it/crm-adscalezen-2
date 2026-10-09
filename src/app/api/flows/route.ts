@@ -149,7 +149,7 @@ export async function POST(request: Request) {
       )
     }
     if (template.nodes.length > 0) {
-      const { error: nodesErr } = await admin.from('flow_nodes').insert(
+      let { error: nodesErr } = await admin.from('flow_nodes').insert(
         template.nodes.map((n) => ({
           flow_id: flow.id,
           node_key: n.node_key,
@@ -157,11 +157,22 @@ export async function POST(request: Request) {
           config: n.config,
         })),
       )
+      if (nodesErr && admin !== supabase) {
+        const retry = await supabase.from('flow_nodes').insert(
+          template.nodes.map((n) => ({
+            flow_id: flow.id,
+            node_key: n.node_key,
+            node_type: n.node_type,
+            config: n.config,
+          })),
+        )
+        nodesErr = retry.error
+      }
       if (nodesErr) {
         // Roll back the parent flow so a half-cloned template doesn't
         // sit as an empty draft. CASCADE on flow_id removes the
         // (probably zero) nodes too.
-        await admin.from('flows').delete().eq('id', flow.id)
+        await (admin !== supabase ? supabase : admin).from('flows').delete().eq('id', flow.id)
         return NextResponse.json(
           { error: nodesErr.message },
           { status: 500 },

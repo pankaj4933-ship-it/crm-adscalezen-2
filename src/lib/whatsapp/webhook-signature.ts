@@ -35,7 +35,7 @@ export function parseAppSecrets(raw: string | undefined): string[] {
   if (!raw) return []
   return raw
     .split(',')
-    .map((s) => s.trim())
+    .map((s) => s.trim().replace(/^["']|["']$/g, ''))
     .filter((s) => s.length > 0)
 }
 

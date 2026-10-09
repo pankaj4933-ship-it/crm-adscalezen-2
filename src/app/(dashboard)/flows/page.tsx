@@ -62,8 +62,8 @@ const STATUS_LABELS = (t: ReturnType<typeof useTranslations>): Record<FlowRow["s
 });
 
 const STATUS_COLORS: Record<FlowRow["status"], string> = {
-  draft: "border-border bg-muted text-muted-foreground",
-  active: "border-emerald-600/40 bg-emerald-500/10 text-emerald-300",
+  draft: "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+  active: "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold shadow-sm shadow-emerald-500/10",
   archived: "border-border bg-muted/50 text-muted-foreground",
 };
 

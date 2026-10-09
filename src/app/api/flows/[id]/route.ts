@@ -140,6 +140,7 @@ export async function PUT(
     .update(flowPatch)
     .eq('id', id)
   if (updErr && admin !== guard.supabase) {
+    console.warn('[PUT /api/flows/[id]] Admin flow update failed, retrying with user client:', updErr.message)
     const retry = await guard.supabase
       .from('flows')
       .update(flowPatch)
@@ -147,31 +148,48 @@ export async function PUT(
     updErr = retry.error
   }
   if (updErr) {
+    console.error('[PUT /api/flows/[id]] Flow update failed:', updErr)
     return NextResponse.json({ error: updErr.message }, { status: 500 })
   }
 
   if (body.nodes !== undefined) {
     // Delete-then-insert. Not transactional but the runner handles
     // mid-edit reads safely (a node_not_found ends the run cleanly).
-    const { error: delErr } = await admin
+    let { error: delErr } = await admin
       .from('flow_nodes')
       .delete()
       .eq('flow_id', id)
+    if (delErr && admin !== guard.supabase) {
+      console.warn('[PUT /api/flows/[id]] Admin node delete failed, retrying with user client:', delErr.message)
+      const retry = await guard.supabase
+        .from('flow_nodes')
+        .delete()
+        .eq('flow_id', id)
+      delErr = retry.error
+    }
     if (delErr) {
+      console.error('[PUT /api/flows/[id]] Node delete failed:', delErr)
       return NextResponse.json({ error: delErr.message }, { status: 500 })
     }
+
     if (body.nodes.length > 0) {
-      const { error: insErr } = await admin.from('flow_nodes').insert(
-        body.nodes.map((n) => ({
-          flow_id: id,
-          node_key: n.node_key,
-          node_type: n.node_type,
-          config: n.config,
-          position_x: n.position_x ?? 0,
-          position_y: n.position_y ?? 0,
-        })),
-      )
+      const sanitizedNodes = body.nodes.map((n) => ({
+        flow_id: id,
+        node_key: n.node_key,
+        node_type: n.node_type,
+        config: n.config ?? {},
+        position_x: Math.round(Number(n.position_x) || 0),
+        position_y: Math.round(Number(n.position_y) || 0),
+      }))
+
+      let { error: insErr } = await admin.from('flow_nodes').insert(sanitizedNodes)
+      if (insErr && admin !== guard.supabase) {
+        console.warn('[PUT /api/flows/[id]] Admin node insert failed, retrying with user client:', insErr.message)
+        const retry = await guard.supabase.from('flow_nodes').insert(sanitizedNodes)
+        insErr = retry.error
+      }
       if (insErr) {
+        console.error('[PUT /api/flows/[id]] Node insert failed:', insErr)
         return NextResponse.json({ error: insErr.message }, { status: 500 })
       }
     }
@@ -179,7 +197,7 @@ export async function PUT(
 
   // Re-fetch and return the new state — the editor uses the response
   // to reconcile its local form state.
-  const [{ data: flow }, { data: nodes }] = await Promise.all([
+  let [{ data: flow }, { data: nodes }] = await Promise.all([
     admin.from('flows').select('*').eq('id', id).maybeSingle(),
     admin
       .from('flow_nodes')
@@ -187,6 +205,20 @@ export async function PUT(
       .eq('flow_id', id)
       .order('created_at', { ascending: true }),
   ])
+
+  if (!flow && admin !== guard.supabase) {
+    const retry = await Promise.all([
+      guard.supabase.from('flows').select('*').eq('id', id).maybeSingle(),
+      guard.supabase
+        .from('flow_nodes')
+        .select('*')
+        .eq('flow_id', id)
+        .order('created_at', { ascending: true }),
+    ])
+    flow = retry[0].data
+    nodes = retry[1].data
+  }
+
   return NextResponse.json({ flow, nodes: nodes ?? [] })
 }
 

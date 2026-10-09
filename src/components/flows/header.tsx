@@ -180,28 +180,29 @@ function StatusChip({ status }: { status: BuilderState["status"] }) {
   const t = useTranslations("Flows.list");
   const cfg = {
     draft: {
-      // Neutral, not amber — amber is reserved for the adjacent
-      // "Edited" dirty signal, so the two don't read as the same alert.
-      cls: "border-border bg-muted text-muted-foreground",
+      cls: "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+      dotCls: "text-slate-400",
       label: t("statusDraft"),
     },
     active: {
-      cls: "border-emerald-600/40 bg-emerald-500/10 text-emerald-300",
+      cls: "border-emerald-500/50 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold shadow-sm shadow-emerald-500/10",
+      dotCls: "text-emerald-500 fill-emerald-500 animate-pulse",
       label: t("statusActive"),
     },
     archived: {
       cls: "border-border bg-muted/50 text-muted-foreground",
+      dotCls: "text-muted-foreground",
       label: t("statusArchived"),
     },
   }[status];
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-medium",
+        "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-medium transition-all",
         cfg.cls,
       )}
     >
-      <CircleDot className="h-3 w-3" />
+      <CircleDot className={cn("h-3 w-3", cfg.dotCls)} />
       {cfg.label}
     </span>
   );

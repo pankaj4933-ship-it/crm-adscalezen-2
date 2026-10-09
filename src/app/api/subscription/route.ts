@@ -32,8 +32,15 @@ export async function GET() {
     // Ignore if function not yet migrated
   }
 
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? (await import('@supabase/supabase-js')).createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+    : supabase;
+
   // 1. Fetch all available plans (excluding deprecated Scale plan)
-  const { data: plansData, error: plansErr } = await supabase
+  const { data: plansData, error: plansErr } = await admin
     .from('plans')
     .select('*')
     .eq('is_active', true)
@@ -43,7 +50,7 @@ export async function GET() {
   const allPlans: Plan[] = (plansData ?? []).filter((p) => p.name !== 'Scale');
 
   // 2. Fetch current subscription for this account
-  const { data: subData, error: subErr } = await supabase
+  const { data: subData, error: subErr } = await admin
     .from('subscriptions')
     .select(`
       id,
@@ -55,8 +62,7 @@ export async function GET() {
       notes,
       billing_cycle,
       is_trial,
-      custom_overrides,
-      plans (*)
+      custom_overrides
     `)
     .eq('account_id', accountId)
     .maybeSingle();
@@ -71,7 +77,7 @@ export async function GET() {
       const trialDays = freePlan.trial_days || 7;
       const trialEnd = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000);
 
-      const { data: newSub } = await supabase
+      const { data: newSub } = await admin
         .from('subscriptions')
         .insert({
           account_id: accountId,
@@ -94,8 +100,7 @@ export async function GET() {
           notes,
           billing_cycle,
           is_trial,
-          custom_overrides,
-          plans (*)
+          custom_overrides
         `)
         .maybeSingle();
 

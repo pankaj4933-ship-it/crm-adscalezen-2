@@ -170,7 +170,14 @@ export async function POST(request: Request) {
     ? new Date(end_date)
     : new Date(startAt.getTime() + (is_trial ? 7 : 30) * 24 * 60 * 60 * 1000);
 
-  const { data, error } = await supabase
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? (await import('@supabase/supabase-js')).createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+    : supabase;
+
+  const { data, error } = await admin
     .from('subscriptions')
     .upsert(
       {
@@ -206,7 +213,14 @@ export async function DELETE(request: Request) {
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
   if (authErr || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: profile } = await supabase
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? (await import('@supabase/supabase-js')).createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+    : supabase;
+
+  const { data: profile } = await admin
     .from('profiles')
     .select('is_super_admin')
     .eq('user_id', user.id)
@@ -220,7 +234,7 @@ export async function DELETE(request: Request) {
   const accountId = searchParams.get('account_id');
   if (!accountId) return NextResponse.json({ error: 'account_id required' }, { status: 400 });
 
-  const { error } = await supabase
+  const { error } = await admin
     .from('subscriptions')
     .update({ status: 'cancelled' })
     .eq('account_id', accountId);

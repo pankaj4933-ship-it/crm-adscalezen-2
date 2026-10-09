@@ -75,18 +75,28 @@ export async function GET() {
     subsByAccountId.set(sub.account_id, arr);
   });
 
-  // 4. If any auth user is missing an accounts row, batch create them
-  const missingAuthUsers = authUsers.filter((u) => !accountsByOwnerId.has(u.id));
-  if (missingAuthUsers.length > 0) {
-    try {
-      const newAccountsData = missingAuthUsers.map((u) => ({
-        name: u.user_metadata?.full_name || u.user_metadata?.name || u.email || 'My account',
-        owner_user_id: u.id,
-      }));
+  // 4. Auto-heal: If any auth user or profile is missing an accounts row, batch create them
+  const missingFromAuth = authUsers.filter((u) => !accountsByOwnerId.has(u.id));
+  const missingFromProfiles = (existingProfiles || []).filter(
+    (p) => p.user_id && !accountsByOwnerId.has(p.user_id) && !missingFromAuth.some((u) => u.id === p.user_id)
+  );
 
+  const allMissingToCreate = [
+    ...missingFromAuth.map((u) => ({
+      name: u.user_metadata?.full_name || u.user_metadata?.name || u.email || 'My account',
+      owner_user_id: u.id,
+    })),
+    ...missingFromProfiles.map((p) => ({
+      name: p.full_name || p.email || 'My account',
+      owner_user_id: p.user_id,
+    })),
+  ];
+
+  if (allMissingToCreate.length > 0) {
+    try {
       const { data: createdAccounts } = await admin
         .from('accounts')
-        .insert(newAccountsData)
+        .insert(allMissingToCreate)
         .select('id, name, created_at, owner_user_id');
 
       (createdAccounts || []).forEach((newAcc) => {
@@ -109,7 +119,7 @@ export async function GET() {
     const ownerProf = profilesByUserId.get(acc.owner_user_id) || profilesByAccountId.get(acc.id);
     const authUser = authUserById.get(acc.owner_user_id);
 
-    const resolvedEmail = authUser?.email || ownerProf?.email || '';
+    const resolvedEmail = ownerProf?.email || authUser?.email || '';
     const resolvedName =
       ownerProf?.full_name ||
       authUser?.user_metadata?.full_name ||

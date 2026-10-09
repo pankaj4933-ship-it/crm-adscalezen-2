@@ -201,9 +201,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .eq("user_id", userId)
           .maybeSingle();
 
-        if (!result.error) {
+        if (!result.error && result.data) {
           data = result.data;
           break;
+        }
+
+        // If no profile was found, try auto-bootstrap endpoint
+        if (!result.error && !result.data) {
+          try {
+            const bootRes = await fetch("/api/auth/bootstrap", { method: "POST" });
+            if (bootRes.ok) {
+              const bootJson = await bootRes.json();
+              if (bootJson.profile) {
+                data = bootJson.profile;
+                break;
+              }
+            }
+          } catch (bErr) {
+            console.error("[AuthProvider] auto-bootstrap threw:", bErr);
+          }
         }
 
         const error = result.error;

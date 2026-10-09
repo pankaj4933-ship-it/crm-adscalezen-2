@@ -28,19 +28,21 @@ export async function GET() {
     // Ignore if not present
   }
 
-  // Fetch all accounts
-  const { data: accounts, error } = await supabase
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? (await import('@supabase/supabase-js')).createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      )
+    : supabase;
+
+  // Fetch all accounts with subscriptions and plans
+  const { data: accounts, error } = await admin
     .from('accounts')
     .select(`
       id,
       name,
       created_at,
       owner_user_id,
-      profiles!accounts_owner_user_id_fkey (
-        full_name,
-        email,
-        is_super_admin
-      ),
       subscriptions (
         id,
         status,
@@ -79,18 +81,42 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Fetch all profiles to map owner info without relying on PostgREST schema cache joins
+  const { data: profiles } = await admin
+    .from('profiles')
+    .select('user_id, account_id, full_name, email, is_super_admin');
+
+  const profileByUserId = new Map(
+    (profiles || []).map((p) => [p.user_id, p])
+  );
+  const profileByAccountId = new Map(
+    (profiles || []).map((p) => [p.account_id, p])
+  );
+
   // Fetch usage stats per account (contacts count, campaigns count, flows count, team members count)
   const enhancedAccounts = await Promise.all(
     (accounts || []).map(async (acc) => {
       const [contactsRes, campaignsRes, flowsRes, membersRes] = await Promise.all([
-        supabase.from('contacts').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-        supabase.from('broadcasts').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-        supabase.from('flows').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
+        admin.from('contacts').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
+        admin.from('broadcasts').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
+        admin.from('flows').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
+        admin.from('profiles').select('id', { count: 'exact', head: true }).eq('account_id', acc.id),
       ]);
+
+      const ownerProf =
+        profileByUserId.get(acc.owner_user_id) ||
+        profileByAccountId.get(acc.id) ||
+        null;
 
       return {
         ...acc,
+        profiles: ownerProf
+          ? {
+              full_name: ownerProf.full_name || '',
+              email: ownerProf.email || '',
+              is_super_admin: Boolean(ownerProf.is_super_admin),
+            }
+          : null,
         usage: {
           contactsCount: contactsRes.count ?? 0,
           campaignsCount: campaignsRes.count ?? 0,
